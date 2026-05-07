@@ -143,9 +143,9 @@ function MijnOrganisatie() {
     <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', background: '#f5f5f5' }}>
       <Sidebar actief="organisatie" voortgang={voortgang} />
 
-      <div style={{ marginLeft: '220px', padding: '2.5rem', flex: 1, maxWidth: '760px' }}>
+      <div style={{ marginLeft: 'var(--sidebar-breedte, 220px)', padding: '2.5rem', flex: 1, maxWidth: '760px' }}>
         <h1 style={{ color: blauw, marginBottom: '0.5rem' }}>Mijn organisatie</h1>
-        <p style={{ color: '#888', marginBottom: '2rem' }}>Een actieve meting van jouw organisatie op het gebied van toegankelijkheid</p>
+        <p style={{ color: '#555', marginBottom: '2rem' }}>Een actieve meting van jouw organisatie op het gebied van toegankelijkheid</p>
 
         {/* Introductieblok */}
         {!klaar && stapIndex === 0 && (
@@ -171,7 +171,7 @@ function MijnOrganisatie() {
               </div>
               <div>
                 <p style={{ fontWeight: '700', color: cijferKleur, fontSize: '1.2rem', margin: '0 0 0.4rem' }}>{cijferLabel}</p>
-                <p style={{ color: '#666', fontSize: '0.9rem', margin: 0, lineHeight: '1.6' }}>
+                <p style={{ color: '#555', fontSize: '0.9rem', margin: 0, lineHeight: '1.6' }}>
                   Op basis van jouw antwoorden over de fysieke omgeving, bezoekersonderzoek en digitale toegankelijkheid.
                 </p>
               </div>
@@ -212,7 +212,7 @@ function MijnOrganisatie() {
                 {huidigeStap.vragen.map((vraag) => (
                   <div key={vraag.id}>
                     <label style={{ fontWeight: '600', color: '#222', fontSize: '0.95rem', display: 'block', marginBottom: '0.4rem' }}>{vraag.label}</label>
-                    <p style={{ fontSize: '0.82rem', color: '#888', margin: '0 0 0.75rem', lineHeight: '1.5', fontStyle: 'italic' }}>💡 {vraag.tip}</p>
+                    <p style={{ fontSize: '0.82rem', color: '#555', margin: '0 0 0.75rem', lineHeight: '1.5', fontStyle: 'italic' }}>💡 {vraag.tip}</p>
 
                     {vraag.type === 'select' && (
                       <select value={antwoorden[vraag.id] || ''} onChange={(e) => handleAntwoord(vraag.id, e.target.value)} style={{ width: '100%', padding: '0.65rem', border: '1px solid #ddd', borderRadius: '8px', fontSize: '0.95rem', background: 'white' }}>
@@ -231,9 +231,9 @@ function MijnOrganisatie() {
                     {vraag.type === 'slider' && (
                       <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                          <span style={{ fontSize: '0.8rem', color: '#888' }}>Laag</span>
+                          <span style={{ fontSize: '0.8rem', color: '#555' }}>Laag</span>
                           <span style={{ fontWeight: 'bold', color: blauw, fontSize: '1.2rem' }}>{antwoorden[vraag.id] || 5}/10</span>
-                          <span style={{ fontSize: '0.8rem', color: '#888' }}>Hoog</span>
+                          <span style={{ fontSize: '0.8rem', color: '#555' }}>Hoog</span>
                         </div>
                         <input type="range" min="1" max="10" value={antwoorden[vraag.id] || 5} onChange={(e) => handleAntwoord(vraag.id, parseInt(e.target.value))} style={{ width: '100%', accentColor: blauw }} />
                       </div>

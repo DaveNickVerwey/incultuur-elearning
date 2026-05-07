@@ -67,10 +67,10 @@ function Sidebar({ actief, voortgang = {} }) {
 
       <div style={{ marginBottom: '2.5rem' }}>
         <div style={{ fontWeight: 'bold', fontSize: '1rem' }}>InCultuur leren</div>
-        {profiel && <div style={{ fontSize: '0.75rem', opacity: 0.7, marginTop: '0.25rem' }}>{profiel.naam} {profiel.achternaam}</div>}
+        {profiel && <div style={{ fontSize: '0.75rem', opacity: 0.75, marginTop: '0.25rem' }}>{profiel.naam} {profiel.achternaam}</div>}
       </div>
 
-      <div style={{ fontSize: '0.7rem', opacity: 0.5, letterSpacing: '0.1em', marginBottom: '0.75rem' }}>MENU</div>
+      <div style={{ fontSize: '0.7rem', opacity: 0.75, letterSpacing: '0.1em', marginBottom: '0.75rem' }}>MENU</div>
       <nav style={{ flex: 1 }}>
 
         <div onClick={() => handleNavigeer('/dashboard')} style={{ padding: '0.6rem 0.75rem', borderRadius: '6px', marginBottom: '0.25rem', background: actief === 'dashboard' ? 'rgba(255,255,255,0.15)' : 'transparent', cursor: 'pointer', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -92,7 +92,7 @@ function Sidebar({ actief, voortgang = {} }) {
               const nr = i + 1
               const status = moduleStatus(nr)
               return (
-                <div key={nr} onClick={() => status !== 'vergrendeld' && handleNavigeer(`/module/${nr}`)} style={{ padding: '0.4rem 0.5rem', fontSize: '0.78rem', color: status === 'vergrendeld' ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '0.25rem', cursor: status === 'vergrendeld' ? 'default' : 'pointer' }}>
+                <div key={nr} onClick={() => status !== 'vergrendeld' && handleNavigeer(`/module/${nr}`)} style={{ padding: '0.4rem 0.5rem', fontSize: '0.78rem', color: 'rgba(255,255,255,0.95)', textDecoration: status === 'vergrendeld' ? 'line-through' : 'none', display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '0.25rem', cursor: status === 'vergrendeld' ? 'default' : 'pointer' }}>
                   <span style={{ marginTop: '2px', flexShrink: 0 }}>{status === 'afgerond' ? '✓' : status === 'vergrendeld' ? '🔒' : '●'}</span>
                   <span>{titel}</span>
                 </div>
@@ -127,8 +127,8 @@ function Sidebar({ actief, voortgang = {} }) {
 
   return (
     <>
-      {isMobiel && (
-        <button onClick={() => setMobielOpen(true)} style={{ position: 'fixed', top: '1rem', left: '1rem', zIndex: 99, background: blauw, border: 'none', borderRadius: '8px', padding: '0.5rem 0.75rem', cursor: 'pointer', color: 'white', fontSize: '1.25rem' }}>
+     {isMobiel && !mobielOpen && (
+        <button onClick={() => setMobielOpen(true)} style={{ position: 'fixed', top: '0.75rem', left: '0.75rem', zIndex: 101, background: 'rgba(1,44,117,0.85)', border: 'none', borderRadius: '8px', padding: '0.5rem 0.75rem', cursor: 'pointer', color: 'white', fontSize: '1.25rem' }}>
           ☰
         </button>
       )}

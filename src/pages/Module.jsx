@@ -11,7 +11,7 @@ import module3Foto from '../assets/module3.jpg'
 import module4Foto from '../assets/module4.jpg'
 
 const blauw = '#012c75'
-const groen = '#039aa3'
+const groen = '#027a82'
 
 const fotoMap = { 1: module1Foto, 2: module2Foto, 3: module3Foto, 4: module4Foto }
 
@@ -30,9 +30,16 @@ function Module() {
   const [stap, setStap] = useState('intro')
   const [quizAntwoorden, setQuizAntwoorden] = useState({})
   const [schuivers, setSchuivers] = useState({})
+  const [isMobiel, setIsMobiel] = useState(window.innerWidth < 768)
   const navigate = useNavigate()
 
   const module = modulesData.find((m) => m.nr === parseInt(nr))
+
+  useEffect(() => {
+    const check = () => setIsMobiel(window.innerWidth < 768)
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   useEffect(() => {
     if (!user) return
@@ -71,11 +78,7 @@ function Module() {
     const isCorrect = optieNr === module.quiz[quizNr].correct
     setQuizAntwoorden({
       ...quizAntwoorden,
-      [quizNr]: {
-        gekozen: optieNr,
-        correct: isCorrect,
-        geprobeerd: [...(quizAntwoorden[quizNr]?.geprobeerd || []), optieNr]
-      }
+      [quizNr]: { gekozen: optieNr, correct: isCorrect, geprobeerd: [...(quizAntwoorden[quizNr]?.geprobeerd || []), optieNr] }
     })
   }
 
@@ -106,38 +109,38 @@ function Module() {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', background: '#f5f5f5' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', background: 'white' }}>
       <Sidebar actief="modules" voortgang={voortgang} />
 
-      <div style={{ marginLeft: '220px', flex: 1 }}>
+      <main style={{ marginLeft: isMobiel ? 0 : '220px', flex: 1 }}>
 
         {/* Hero */}
-        <div style={{ background: blauw, padding: '3rem 2.5rem', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${fotoMap[module.nr]})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.2 }} />
+        <div style={{ background: blauw, padding: isMobiel ? '4rem 1.5rem 2rem 1.5rem' : '3rem 2.5rem', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${fotoMap[module.nr]})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.3 }} />
           <div style={{ position: 'relative', zIndex: 1 }}>
-            <p style={{ color: groen, fontWeight: '600', fontSize: '0.85rem', marginBottom: '0.5rem', letterSpacing: '0.05em' }}>MODULE {module.nr} · {module.duur}</p>
-            <h1 style={{ color: 'white', fontSize: '2rem', margin: '0 0 0.75rem' }}>{module.titel}</h1>
+            {!isMobiel && <p style={{ color: groen, fontWeight: '600', fontSize: '0.85rem', marginBottom: '0.5rem', letterSpacing: '0.05em' }}>MODULE {module.nr} · {module.duur}</p>}
+            <h1 style={{ color: 'white', fontSize: isMobiel ? '1.4rem' : '2rem', margin: '0 0 0.75rem' }}>{module.titel}</h1>
             <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>{module.subtitel}</p>
-          </div>
+{isMobiel && <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.8rem', marginTop: '0.5rem' }}>⏱ {module.duur}</p>}          </div>
         </div>
 
         {/* Stappen navigatie */}
-        <div style={{ background: 'white', borderBottom: '1px solid #eee', padding: '0 2.5rem', display: 'flex', gap: '2rem', overflowX: 'auto' }}>
+        <div style={{ background: 'white', borderBottom: '1px solid #eee', padding: '0 1.5rem', display: 'flex', gap: '1rem', overflowX: 'auto' }}>
           {stappen.map((s, i) => (
-            <button key={s} onClick={() => setStap(s)} style={{ padding: '1rem 0', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '0.9rem', fontWeight: stap === s ? '600' : '400', color: stap === s ? blauw : '#888', borderBottom: stap === s ? `2px solid ${blauw}` : '2px solid transparent', whiteSpace: 'nowrap' }}>
+            <button key={s} onClick={() => setStap(s)} style={{ padding: '1rem 0', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '0.85rem', fontWeight: stap === s ? '600' : '400', color: stap === s ? blauw : '#555', borderBottom: stap === s ? `2px solid ${blauw}` : '2px solid transparent', whiteSpace: 'nowrap' }}>
               {i + 1}. {stapNamen[s]}
             </button>
           ))}
         </div>
 
         {/* Inhoud */}
-        <div style={{ padding: '2.5rem' }}>
+        <div style={{ padding: isMobiel ? '1.5rem' : '2.5rem' }}>
 
           {stap === 'intro' && (
             <div style={{ maxWidth: '720px' }}>
               <p style={{ fontSize: '1.05rem', lineHeight: '1.8', color: '#444', marginBottom: '2rem' }}>{module.intro}</p>
               <div style={{ background: 'white', borderRadius: '12px', padding: '2rem', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', marginBottom: '2rem' }}>
-                <h3 style={{ color: blauw, marginTop: 0, marginBottom: '1.25rem' }}>Na deze module kun je...</h3>
+                <h2 style={{ color: blauw, marginTop: 0, marginBottom: '1.25rem', fontSize: '1.1rem' }}>Na deze module kun je...</h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   {module.leerdoelen.map((doel, i) => (
                     <div key={i} style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
@@ -147,7 +150,7 @@ function Module() {
                   ))}
                 </div>
               </div>
-              <button onClick={volgendeStap} style={{ padding: '0.85rem 2rem', background: blauw, color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' }}>
+              <button onClick={volgendeStap} style={{ padding: '0.85rem 2rem', background: blauw, color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', width: isMobiel ? '100%' : 'auto' }}>
                 Volgende →
               </button>
             </div>
@@ -155,18 +158,18 @@ function Module() {
 
           {stap === 'inhoud' && module.inhoud && (
             <div style={{ maxWidth: '860px' }}>
-              <div style={{ background: 'white', borderRadius: '12px', padding: '2.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', marginBottom: '2rem' }}>
+              <div style={{ background: 'white', borderRadius: '12px', padding: isMobiel ? '1.5rem' : '2.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', marginBottom: '2rem' }}>
                 {module.inhoud.map((blok, i) => {
                   if (blok.type === 'tekst') return (
                     <div key={i} style={{ marginBottom: i < module.inhoud.length - 1 ? '2rem' : 0 }}>
-                      <h3 style={{ color: blauw, marginTop: 0, marginBottom: '0.6rem', fontSize: '1.1rem' }}>{blok.titel}</h3>
+                      <h2 style={{ color: blauw, marginTop: 0, marginBottom: '0.6rem', fontSize: '1.1rem' }}>{blok.titel}</h2>
                       <p style={{ fontSize: '1rem', lineHeight: '1.85', color: '#444', margin: 0 }}>{blok.tekst}</p>
                     </div>
                   )
-                   if (blok.type === 'quote') return (
+                  if (blok.type === 'quote') return (
                     <div key={i} style={{ borderLeft: `4px solid ${groen}`, background: '#f0fdf9', borderRadius: '0 8px 8px 0', padding: '1.25rem 1.5rem', margin: '2rem 0' }}>
                       <p style={{ fontSize: '1.05rem', lineHeight: '1.7', color: '#1a4a3a', fontStyle: 'italic', margin: '0 0 0.6rem' }}>"{blok.tekst}"</p>
-                      <p style={{ margin: 0, fontSize: '0.82rem', color: '#888' }}>— {blok.auteur}</p>
+                      <p style={{ margin: 0, fontSize: '0.82rem', color: '#555' }}>— {blok.auteur}</p>
                     </div>
                   )
                   if (blok.type === 'foto') return (
@@ -177,9 +180,9 @@ function Module() {
                   return null
                 })}
               </div>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <button onClick={vorigeStap} style={{ padding: '0.85rem 2rem', background: 'white', color: blauw, border: `1px solid ${blauw}`, borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' }}>← Terug</button>
-                <button onClick={volgendeStap} style={{ padding: '0.85rem 2rem', background: blauw, color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' }}>Naar de quiz →</button>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <button onClick={vorigeStap} style={{ padding: '0.85rem 2rem', background: 'white', color: blauw, border: `1px solid ${blauw}`, borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', flex: isMobiel ? 1 : 'none' }}>← Terug</button>
+                <button onClick={volgendeStap} style={{ padding: '0.85rem 2rem', background: blauw, color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', flex: isMobiel ? 1 : 'none' }}>Naar de quiz →</button>
               </div>
             </div>
           )}
@@ -188,11 +191,11 @@ function Module() {
             <div style={{ maxWidth: '720px' }}>
               <p style={{ fontSize: '1.05rem', lineHeight: '1.8', color: '#444', marginBottom: '1.5rem' }}>{module.videotekst}</p>
               <div style={{ borderRadius: '12px', overflow: 'hidden', marginBottom: '2rem' }}>
-                <iframe width="100%" height="380" src={module.video} title="Module video" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ display: 'block' }} />
+                <iframe width="100%" height={isMobiel ? '220' : '380'} src={module.video} title="Module video" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ display: 'block' }} />
               </div>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <button onClick={vorigeStap} style={{ padding: '0.85rem 2rem', background: 'white', color: blauw, border: `1px solid ${blauw}`, borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' }}>← Terug</button>
-                <button onClick={volgendeStap} style={{ padding: '0.85rem 2rem', background: blauw, color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' }}>Naar de quiz →</button>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <button onClick={vorigeStap} style={{ padding: '0.85rem 2rem', background: 'white', color: blauw, border: `1px solid ${blauw}`, borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', flex: isMobiel ? 1 : 'none' }}>← Terug</button>
+                <button onClick={volgendeStap} style={{ padding: '0.85rem 2rem', background: blauw, color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', flex: isMobiel ? 1 : 'none' }}>Naar de quiz →</button>
               </div>
             </div>
           )}
@@ -200,7 +203,7 @@ function Module() {
           {stap === 'quiz' && (
             <div style={{ maxWidth: '720px' }}>
               <h2 style={{ color: blauw, marginTop: 0 }}>Quiz</h2>
-              <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Beantwoord alle vragen correct om verder te gaan. Je kunt een vraag opnieuw proberen als je het fout hebt.</p>
+              <p style={{ color: '#555', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Beantwoord alle vragen correct om verder te gaan.</p>
               {module.quiz.map((vraag, i) => {
                 const antwoord = quizAntwoorden[i]
                 const isGoed = antwoord?.correct
@@ -213,7 +216,6 @@ function Module() {
                       {antwoord && !isGoed && <span style={{ color: '#ef4444' }}>✗</span>}
                       <p style={{ fontWeight: '600', color: '#222', margin: 0 }}>{i + 1}. {vraag.vraag}</p>
                     </div>
-
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
                       {vraag.opties.map((optie, j) => {
                         const geprobeerd = antwoord?.geprobeerd?.includes(j)
@@ -232,9 +234,7 @@ function Module() {
                         )
                       })}
                     </div>
-
-                    {/* Toelichting — vaste plek, altijd zichtbaar als er een antwoord is */}
-                    <div style={{ minHeight: '80px', padding: '0.75rem 1rem', borderRadius: '8px', background: antwoord ? (isGoed ? '#f0fdf4' : '#fff5f5') : '#f8f9fa', border: antwoord ? (isGoed ? `1px solid ${groen}` : '1px solid #fca5a5') : '1px solid #eee', transition: 'background 0.2s' }}>
+                    <div style={{ minHeight: '80px', padding: '0.75rem 1rem', borderRadius: '8px', background: antwoord ? (isGoed ? '#f0fdf4' : '#fff5f5') : '#f8f9fa', border: antwoord ? (isGoed ? `1px solid ${groen}` : '1px solid #fca5a5') : '1px solid #eee' }}>
                       {antwoord ? (
                         <>
                           <p style={{ margin: '0 0 0.25rem', fontSize: '0.88rem', fontWeight: '600', color: isGoed ? '#166534' : '#991b1b' }}>
@@ -243,22 +243,23 @@ function Module() {
                           <p style={{ margin: 0, fontSize: '0.88rem', color: '#444', lineHeight: '1.5' }}>
                             {vraag.toelichtingen ? vraag.toelichtingen[gekozenOptie] : vraag.toelichting}
                           </p>
-                          {!isGoed && <p style={{ margin: '0.5rem 0 0', fontSize: '0.82rem', color: '#888' }}>Probeer het opnieuw.</p>}
+                          {!isGoed && <p style={{ margin: '0.5rem 0 0', fontSize: '0.82rem', color: '#555' }}>Probeer het opnieuw.</p>}
                         </>
                       ) : (
-                        <p style={{ margin: 0, fontSize: '0.88rem', color: '#bbb' }}>Kies een antwoord om toelichting te zien.</p>
+                        <p style={{ margin: 0, fontSize: '0.88rem', color: '#999' }}>Kies een antwoord om toelichting te zien.</p>
                       )}
                     </div>
                   </div>
                 )
               })}
-
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '1rem' }}>
-                <button onClick={vorigeStap} style={{ padding: '0.85rem 2rem', background: 'white', color: blauw, border: `1px solid ${blauw}`, borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' }}>← Terug</button>
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '1rem', flexWrap: 'wrap' }}>
+                <button onClick={vorigeStap} style={{ padding: '0.85rem 2rem', background: 'white', color: blauw, border: `1px solid ${blauw}`, borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', flex: isMobiel ? 1 : 'none' }}>← Terug</button>
                 {alleGoed ? (
-                  <button onClick={volgendeStap} style={{ padding: '0.85rem 2rem', background: blauw, color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' }}>Naar het actiepunt →</button>
+                  <button onClick={volgendeStap} style={{ padding: '0.85rem 2rem', background: blauw, color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', flex: isMobiel ? 1 : 'none' }}>
+                    Naar het actiepunt →
+                  </button>
                 ) : (
-                  <p style={{ color: '#888', fontSize: '0.85rem', margin: 0 }}>Beantwoord alle vragen correct om verder te gaan.</p>
+                  <p style={{ color: '#555', fontSize: '0.85rem', margin: 0 }}>Beantwoord alle vragen correct om verder te gaan.</p>
                 )}
               </div>
             </div>
@@ -279,19 +280,19 @@ function Module() {
 
               {module.schuivers && (
                 <div style={{ background: 'white', borderRadius: '12px', padding: '2rem', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', marginBottom: '1.5rem' }}>
-                  <h3 style={{ color: blauw, marginTop: 0, marginBottom: '1.5rem' }}>Hoe toegankelijk is jouw organisatie?</h3>
+                  <h2 style={{ color: blauw, marginTop: 0, marginBottom: '1.5rem', fontSize: '1.1rem' }}>Hoe toegankelijk is jouw organisatie?</h2>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     {module.schuivers.map((schuiver, i) => (
                       <div key={i}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.3rem' }}>
-                          <div>
+                          <div style={{ flex: 1, marginRight: '1rem' }}>
                             <span style={{ fontWeight: '600', color: '#222', fontSize: '0.95rem' }}>{schuiver.titel}</span>
-                            <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: '#888' }}>{schuiver.subtitel}</p>
+                            <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: '#555' }}>{schuiver.subtitel}</p>
                           </div>
-                          <span style={{ fontWeight: 'bold', color: blauw, fontSize: '1.1rem', marginLeft: '1rem', flexShrink: 0 }}>{schuivers[i] || 5}/10</span>
+                          <span style={{ fontWeight: 'bold', color: blauw, fontSize: '1.1rem', flexShrink: 0 }}>{schuivers[i] || 5}/10</span>
                         </div>
                         <input type="range" min="1" max="10" value={schuivers[i] || 5} onChange={(e) => setSchuivers({ ...schuivers, [i]: parseInt(e.target.value) })} style={{ width: '100%', accentColor: blauw }} />
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#aaa', marginTop: '0.2rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#555', marginTop: '0.2rem' }}>
                           <span>Nog niet aanwezig</span>
                           <span>Volledig aanwezig</span>
                         </div>
@@ -310,13 +311,13 @@ function Module() {
                 </div>
               )}
 
-              <button onClick={handleAfgerond} style={{ padding: '0.85rem 2rem', background: groen, color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' }}>
+              <button onClick={handleAfgerond} style={{ padding: '0.85rem 2rem', background: groen, color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', width: isMobiel ? '100%' : 'auto' }}>
                 Module afronden ✓
               </button>
             </div>
           )}
         </div>
-      </div>
+      </main>
     </div>
   )
 }

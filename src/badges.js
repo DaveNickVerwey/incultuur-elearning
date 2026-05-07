@@ -29,12 +29,7 @@ export const alleBadges = [
     icoon: '💡',
     omschrijving: 'Je hebt 8 of meer inzichten opgedaan.',
   },
-  {
-    id: 'toegankelijkheidsscanner',
-    naam: 'Toegankelijkheidsscanner',
-    icoon: '🎯',
-    omschrijving: 'Je hebt de organisatiescan ingevuld.',
-  },
+ 
   {
     id: 'perfectionist',
     naam: 'Perfectionist',
@@ -67,7 +62,6 @@ export const checkBadges = (data) => {
   if (!behaald.volleerd && Object.values(voortgang).filter(Boolean).length >= 4) behaald.volleerd = true
   if (!behaald.inzichtelijk && inzichten >= 8) behaald.inzichtelijk = true
   if (!behaald.diepgang && Object.values(moduleTeller).some((v) => v >= 3)) behaald.diepgang = true
-  if (!behaald.toegankelijkheidsscanner && data.scanIngevuld) behaald.toegankelijkheidsscanner = true
   if (!behaald.perfectionist && data.perfectScore) behaald.perfectionist = true
   if (!behaald.reflectief && data.reflectieIngevuld) behaald.reflectief = true
 
