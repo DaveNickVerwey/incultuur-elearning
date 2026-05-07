@@ -8,3 +8,20 @@ html, body, #root {
   height: 100%;
   width: 100%;
 }
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #certificaat, #certificaat * {
+    visibility: visible;
+  }
+  #certificaat {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 2rem;
+    box-shadow: none !important;
+    border: 2px solid #012c75 !important;
+  }
+}

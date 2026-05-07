@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { auth, db } from '../firebase'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { deleteUser } from 'firebase/auth'
+import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore'
 import Sidebar from '../components/Sidebar'
+import { useNavigate } from 'react-router-dom'
 import { alleBadges, checkBadges } from '../badges'
 import { modulesData } from '../modulesData'
 
@@ -10,6 +12,7 @@ const blauw = '#012c75'
 const groen = '#039aa3'
 
 function MijnProfiel() {
+  const navigate = useNavigate()
   const [user] = useAuthState(auth)
   const [form, setForm] = useState({ naam: '', achternaam: '', organisatie: '', functie: '', verwachting: '' })
   const [opgeslagen, setOpgeslagen] = useState(false)
@@ -47,6 +50,14 @@ function MijnProfiel() {
     haalProfiel()
   }, [user])
 
+  const handleVerwijderAccount = async () => {
+    const bevestig = window.confirm('Weet je zeker dat je je account wilt verwijderen? Dit kan niet ongedaan worden gemaakt.')
+    if (!bevestig) return
+    const ref = doc(db, 'gebruikers', user.uid)
+    await deleteDoc(ref)
+    await deleteUser(user)
+  }
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
@@ -69,6 +80,17 @@ function MijnProfiel() {
         <h1 style={{ color: blauw, marginBottom: '0.5rem' }}>Mijn profiel</h1>
         <p style={{ color: '#888', marginBottom: '2rem' }}>Pas je gegevens aan indien nodig</p>
 
+        {Object.values(voortgang).filter(Boolean).length >= 4 && (
+          <div onClick={() => navigate('/bewijs')} style={{ background: blauw, borderRadius: '12px', padding: '1.25rem 1.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', cursor: 'pointer' }}>
+            <span style={{ fontSize: '1.5rem' }}>🏆</span>
+            <div>
+              <p style={{ color: 'white', fontWeight: '600', margin: 0 }}>Bewijs van deelname</p>
+              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', margin: '0.2rem 0 0' }}>Bekijk je certificaat en reflectie</p>
+            </div>
+            <span style={{ color: 'white', marginLeft: 'auto', fontSize: '1.25rem' }}>→</span>
+          </div>
+        )}
+
         {/* Badges */}
         <div style={{ background: 'white', borderRadius: '12px', padding: '2rem', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', marginBottom: '1.5rem' }}>
           <h3 style={{ color: blauw, marginTop: 0, marginBottom: '0.4rem' }}>Jouw badges</h3>
@@ -79,29 +101,11 @@ function MijnProfiel() {
             {alleBadges.map((badge) => {
               const behaald = !!badges[badge.id]
               return (
-                <div
-                  key={badge.id}
-                  style={{
-                    padding: '1.5rem 1rem',
-                    borderRadius: '10px',
-                    background: behaald ? '#f8f9ff' : '#fafafa',
-                    border: behaald ? `1px solid ${blauw}30` : '1px solid #eee',
-                    opacity: behaald ? 1 : 0.4,
-                    textAlign: 'center',
-                    minHeight: '190px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.2s',
-                  }}
-                >
+                <div key={badge.id} style={{ padding: '1.5rem 1rem', borderRadius: '10px', background: behaald ? '#f8f9ff' : '#fafafa', border: behaald ? `1px solid ${blauw}30` : '1px solid #eee', opacity: behaald ? 1 : 0.4, textAlign: 'center', minHeight: '190px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
                   <div style={{ fontSize: '2.75rem', marginBottom: '0.6rem' }}>{badge.icoon}</div>
                   <div style={{ fontWeight: '600', color: behaald ? blauw : '#888', fontSize: '0.85rem', marginBottom: '0.3rem' }}>{badge.naam}</div>
                   <div style={{ fontSize: '0.75rem', color: '#aaa', lineHeight: '1.4', minHeight: '2.5rem' }}>{badge.omschrijving}</div>
-                  {behaald && (
-                    <div style={{ marginTop: '0.6rem', fontSize: '0.72rem', color: groen, fontWeight: '600' }}>✓ Behaald</div>
-                  )}
+                  {behaald && <div style={{ marginTop: '0.6rem', fontSize: '0.72rem', color: groen, fontWeight: '600' }}>✓ Behaald</div>}
                 </div>
               )
             })}
@@ -140,13 +144,27 @@ function MijnProfiel() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
             <button type="submit" style={{ padding: '0.85rem 2rem', background: blauw, color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' }}>
               Opslaan
             </button>
             {opgeslagen && <p style={{ color: groen, fontWeight: '600', margin: 0 }}>✓ Opgeslagen!</p>}
           </div>
         </form>
+
+        {/* Account verwijderen */}
+        {badges.volleerd && (
+          <div style={{ background: 'white', borderRadius: '12px', padding: '2rem', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', marginTop: '1.5rem', border: '1px solid #fee2e2' }}>
+            <h3 style={{ color: '#991b1b', marginTop: 0, marginBottom: '0.5rem' }}>Account verwijderen</h3>
+            <p style={{ color: '#666', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '1.5rem' }}>
+              Je kunt je account en alle bijbehorende gegevens permanent verwijderen. Je bewijs van deelname kun je daarvoor nog downloaden via de knop hierboven.
+            </p>
+            <button onClick={handleVerwijderAccount} style={{ padding: '0.75rem 1.5rem', background: 'white', color: '#991b1b', border: '1px solid #ef4444', borderRadius: '8px', fontSize: '0.9rem', fontWeight: '600', cursor: 'pointer' }}>
+              Account verwijderen
+            </button>
+          </div>
+        )}
+
       </div>
     </div>
   )

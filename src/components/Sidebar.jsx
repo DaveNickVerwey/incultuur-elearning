@@ -101,11 +101,6 @@ function Sidebar({ actief, voortgang = {} }) {
           </div>
         )}
 
-        <div onClick={() => handleNavigeer('/mijnorganisatie')} style={{ padding: '0.6rem 0.75rem', borderRadius: '6px', marginBottom: '0.25rem', background: actief === 'organisatie' ? 'rgba(255,255,255,0.15)' : 'transparent', cursor: 'pointer', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: actief === 'organisatie' ? groen : 'rgba(255,255,255,0.3)', display: 'inline-block' }} />
-          Mijn organisatie
-        </div>
-
         <div onClick={() => handleNavigeer('/mijnprofiel')} style={{ padding: '0.6rem 0.75rem', borderRadius: '6px', marginBottom: '0.25rem', background: actief === 'profiel' ? 'rgba(255,255,255,0.15)' : 'transparent', cursor: 'pointer', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: actief === 'profiel' ? groen : 'rgba(255,255,255,0.3)', display: 'inline-block' }} />
           Mijn profiel

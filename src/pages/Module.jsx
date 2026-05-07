@@ -88,7 +88,11 @@ function Module() {
     setVoortgang(nieuwVoortgang)
     const ref = doc(db, 'gebruikers', user.uid)
     await setDoc(ref, { voortgang: nieuwVoortgang }, { merge: true })
-    navigate('/dashboard')
+    if (module.nr === 4) {
+      navigate('/bewijs')
+    } else {
+      navigate('/dashboard')
+    }
   }
 
   const vorigeStap = () => {

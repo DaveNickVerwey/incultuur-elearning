@@ -10,7 +10,7 @@ import Dashboard from './pages/Dashboard'
 import Contact from './pages/Contact'
 import MijnProfiel from './pages/MijnProfiel'
 import Module from './pages/Module'
-import MijnOrganisatie from './pages/MijnOrganisatie'
+import Bewijs from './pages/Bewijs'
 
 function ProtectedRoute({ children }) {
   const [user, loading] = useAuthState(auth)
@@ -53,11 +53,11 @@ function App() {
           <MijnProfiel />
         </ProtectedRoute>
       } />
-      <Route path="/mijnorganisatie" element={
-  <ProtectedRoute>
-    <MijnOrganisatie />
-  </ProtectedRoute>
-} />
+      <Route path="/bewijs" element={
+        <ProtectedRoute>
+          <Bewijs />
+        </ProtectedRoute>
+      } />
       <Route path="/contact" element={
         <ProtectedRoute>
           <Contact />
