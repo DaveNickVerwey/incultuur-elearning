@@ -112,8 +112,7 @@ function Module() {
     <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', background: 'white' }}>
       <Sidebar actief="modules" voortgang={voortgang} />
 
-      <main style={{ marginLeft: isMobiel ? 0 : '220px', flex: 1 }}>
-
+<main style={{ marginLeft: isMobiel ? 0 : '220px', flex: 1, overflowX: 'hidden' }}>
         {/* Hero */}
         <div style={{ background: blauw, padding: isMobiel ? '4rem 1.5rem 2rem 1.5rem' : '3rem 2.5rem', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${fotoMap[module.nr]})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.3 }} />
@@ -133,8 +132,8 @@ function Module() {
           ))}
         </div>
 
-        {/* Inhoud */}
-        <div style={{ padding: isMobiel ? '1.5rem 1.25rem' : '2.5rem' }}>
+     {/* Inhoud */}
+        <div style={{ padding: isMobiel ? '1.25rem 1rem' : '2.5rem', overflowX: 'hidden' }}>
 
           {stap === 'intro' && (
             <div style={{ maxWidth: '720px' }}>
