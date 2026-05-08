@@ -134,7 +134,7 @@ function Module() {
         </div>
 
         {/* Inhoud */}
-        <div style={{ padding: isMobiel ? '1.5rem' : '2.5rem' }}>
+        <div style={{ padding: isMobiel ? '1.5rem 1.25rem' : '2.5rem' }}>
 
           {stap === 'intro' && (
             <div style={{ maxWidth: '720px' }}>
