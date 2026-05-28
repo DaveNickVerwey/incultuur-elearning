@@ -11,24 +11,32 @@ import Contact from './pages/Contact'
 import MijnProfiel from './pages/MijnProfiel'
 import Module from './pages/Module'
 import Bewijs from './pages/Bewijs'
+import TipsEnTools from './pages/TipsEnTools'
 
 function ProtectedRoute({ children }) {
   const [user, loading] = useAuthState(auth)
-  const [profielKlaar, setProfielKlaar] = useState(null)
+  const [status, setStatus] = useState(null) // null = laden, 'ok', 'geen-profiel', 'geen-welkom'
 
   useEffect(() => {
     if (!user) return
     const check = async () => {
       const ref = doc(db, 'gebruikers', user.uid)
       const snap = await getDoc(ref)
-      setProfielKlaar(snap.exists() && snap.data().naam)
+      if (!snap.exists() || !snap.data().naam) {
+        setStatus('geen-profiel')
+      } else if (!snap.data().welkomGezien) {
+        setStatus('geen-welkom')
+      } else {
+        setStatus('ok')
+      }
     }
     check()
   }, [user])
 
-  if (loading || profielKlaar === null) return <div style={{ padding: '2rem' }}>Laden...</div>
+  if (loading || status === null) return <div style={{ padding: '2rem', fontFamily: 'system-ui' }}>Laden...</div>
   if (!user) return <Navigate to="/login" />
-  if (!profielKlaar) return <Navigate to="/profiel" />
+  if (status === 'geen-profiel') return <Navigate to="/profiel" />
+  if (status === 'geen-welkom') return <Navigate to="/welkom" />
   return children
 }
 
@@ -39,29 +47,22 @@ function App() {
       <Route path="/profiel" element={<Profiel />} />
       <Route path="/welkom" element={<Welkom />} />
       <Route path="/dashboard" element={
-        <ProtectedRoute>
-          <Dashboard />
-        </ProtectedRoute>
+        <ProtectedRoute><Dashboard /></ProtectedRoute>
       } />
       <Route path="/module/:nr" element={
-        <ProtectedRoute>
-          <Module />
-        </ProtectedRoute>
+        <ProtectedRoute><Module /></ProtectedRoute>
       } />
       <Route path="/mijnprofiel" element={
-        <ProtectedRoute>
-          <MijnProfiel />
-        </ProtectedRoute>
+        <ProtectedRoute><MijnProfiel /></ProtectedRoute>
       } />
       <Route path="/bewijs" element={
-        <ProtectedRoute>
-          <Bewijs />
-        </ProtectedRoute>
+        <ProtectedRoute><Bewijs /></ProtectedRoute>
       } />
       <Route path="/contact" element={
-        <ProtectedRoute>
-          <Contact />
-        </ProtectedRoute>
+        <ProtectedRoute><Contact /></ProtectedRoute>
+      } />
+      <Route path="/tipstools" element={
+        <ProtectedRoute><TipsEnTools /></ProtectedRoute>
       } />
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>

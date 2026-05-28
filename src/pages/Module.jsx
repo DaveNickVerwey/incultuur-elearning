@@ -10,26 +10,21 @@ import module2Foto from '../assets/module2.jpg'
 import module3Foto from '../assets/module3.jpg'
 import module4Foto from '../assets/module4.jpg'
 
-const blauw = '#012c75'
-const groen = '#027a82'
+const groen = '#00A99D'
+const groenDark = '#1A3080'
 
 const fotoMap = { 1: module1Foto, 2: module2Foto, 3: module3Foto, 4: module4Foto }
-
-const scanFeedback = (gemiddelde) => {
-  if (gemiddelde <= 3) return { tekst: 'Je staat aan het begin van je toegankelijkheidsreis. Er is veel ruimte voor groei — en dat is juist een kans!', kleur: '#ef4444' }
-  if (gemiddelde <= 5) return { tekst: 'Je bent op weg! Er zijn al mooie stappen gezet, maar er valt nog veel te winnen.', kleur: '#f97316' }
-  if (gemiddelde <= 7) return { tekst: 'Goed bezig! Je organisatie heeft al een stevige basis. Blijf bouwen aan de onderdelen die nog aandacht vragen.', kleur: '#eab308' }
-  if (gemiddelde <= 9) return { tekst: 'Indrukwekkend! Je organisatie is al aardig toegankelijk. Kleine verbeteringen maken het verschil.', kleur: groen }
-  return { tekst: 'Wauw — een echte toegankelijke organisatie! Deel je aanpak met anderen in de sector.', kleur: blauw }
-}
 
 function Module() {
   const { nr } = useParams()
   const [user] = useAuthState(auth)
   const [voortgang, setVoortgang] = useState({})
+  const [profiel, setProfiel] = useState(null)
   const [stap, setStap] = useState('intro')
-  const [quizAntwoorden, setQuizAntwoorden] = useState({})
-  const [schuivers, setSchuivers] = useState({})
+  const [reflecties, setReflecties] = useState({})
+  const [actie, setActie] = useState('')
+  const [opgeslagen, setOpgeslagen] = useState(false)
+  const [linkedInGekopieerd, setLinkedInGekopieerd] = useState(false)
   const [isMobiel, setIsMobiel] = useState(window.innerWidth < 768)
   const navigate = useNavigate()
 
@@ -46,281 +41,376 @@ function Module() {
     const haal = async () => {
       const ref = doc(db, 'gebruikers', user.uid)
       const snap = await getDoc(ref)
-      if (snap.exists()) setVoortgang(snap.data().voortgang || {})
+      if (snap.exists()) {
+        const data = snap.data()
+        setVoortgang(data.voortgang || {})
+        setProfiel(data)
+        const opgeslagenReflecties = data[`reflecties_${nr}`] || {}
+        const opgeslagenActie = data[`actie_${nr}`] || ''
+        setReflecties(opgeslagenReflecties)
+        setActie(opgeslagenActie)
+      }
     }
     haal()
-  }, [user])
+  }, [user, nr])
 
-  useEffect(() => {
-    if (module?.schuivers) {
-      const startWaarden = {}
-      module.schuivers.forEach((_, i) => { startWaarden[i] = 5 })
-      setSchuivers(startWaarden)
-    }
-  }, [module])
+  if (!module) return <div style={{ padding: '2rem', fontFamily: 'system-ui' }}>Module niet gevonden</div>
 
-  if (!module) return <div style={{ padding: '2rem' }}>Module niet gevonden</div>
+  const stappen = ['intro', 'reflectie', 'actie']
+  const stapIndex = stappen.indexOf(stap)
 
-  const stappen = [
-    'intro',
-    ...(module.inhoud ? ['inhoud'] : []),
-    ...(module.video ? ['video'] : []),
-    'quiz',
-    'actiepunt',
-  ]
+  const reflectiesIngevuld = module.reflectieVragen.every(
+    (v) => reflecties[v.id] && reflecties[v.id].trim().length > 10
+  )
+  const actieIngevuld = actie.trim().length > 5
 
-  const stapNamen = { intro: 'Intro', inhoud: 'Inhoud', video: 'Video', quiz: 'Quiz', actiepunt: 'Actiepunt' }
-
-  const alleGoed = module.quiz.every((_, i) => quizAntwoorden[i]?.correct)
-
-  const handleAntwoord = (quizNr, optieNr) => {
-    if (quizAntwoorden[quizNr]?.correct) return
-    const isCorrect = optieNr === module.quiz[quizNr].correct
-    setQuizAntwoorden({
-      ...quizAntwoorden,
-      [quizNr]: { gekozen: optieNr, correct: isCorrect, geprobeerd: [...(quizAntwoorden[quizNr]?.geprobeerd || []), optieNr] }
-    })
-  }
-
-  const gemiddeldeScore = module.schuivers
-    ? Object.values(schuivers).reduce((a, b) => a + b, 0) / module.schuivers.length
-    : 0
-
-  const handleAfgerond = async () => {
-    const nieuwVoortgang = { ...voortgang, [module.nr]: true }
-    setVoortgang(nieuwVoortgang)
-    const ref = doc(db, 'gebruikers', user.uid)
-    await setDoc(ref, { voortgang: nieuwVoortgang }, { merge: true })
-    if (module.nr === 4) {
-      navigate('/bewijs')
-    } else {
-      navigate('/dashboard')
-    }
+  const volgendeStap = () => {
+    const next = stappen[stapIndex + 1]
+    if (next) { setStap(next); window.scrollTo(0, 0) }
   }
 
   const vorigeStap = () => {
-    const index = stappen.indexOf(stap)
-    if (index > 0) {
-      setStap(stappen[index - 1])
-      window.scrollTo(0, 0)
-    }
+    const prev = stappen[stapIndex - 1]
+    if (prev) { setStap(prev); window.scrollTo(0, 0) }
   }
 
-  const volgendeStap = () => {
-    const index = stappen.indexOf(stap)
-    if (index < stappen.length - 1) {
-      setStap(stappen[index + 1])
-      window.scrollTo(0, 0)
-    }
+  const handleAfgerond = async () => {
+    if (!actieIngevuld) return
+    const nieuweVoortgang = { ...voortgang, [module.nr]: true }
+    const ref = doc(db, 'gebruikers', user.uid)
+    const alleAfgerond = Object.keys(nieuweVoortgang).length === 4
+    await setDoc(ref, {
+      voortgang: nieuweVoortgang,
+      [`reflecties_${nr}`]: reflecties,
+      [`actie_${nr}`]: actie,
+    }, { merge: true })
+    setVoortgang(nieuweVoortgang)
+    setOpgeslagen(true)
+    setTimeout(() => {
+      if (alleAfgerond) navigate('/bewijs')
+      else navigate('/dashboard')
+    }, 1500)
+  }
+
+  const volledigeActie = `${module.actieOpdracht.prefix} ${actie}`
+
+  const handleMailActie = () => {
+    const onderwerp = encodeURIComponent(`Mijn actie – InCultuur Boost Module ${module.nr}`)
+    const body = encodeURIComponent(`Hallo,\n\nIk heb Module ${module.nr} (${module.titel}) van de InCultuur Boost afgerond.\n\nMijn actie:\n${volledigeActie}\n\nDeze herinnering is automatisch aangemaakt via de InCultuur Boost.\n\nSucces!\n`)
+    window.location.href = `mailto:${user.email}?subject=${onderwerp}&body=${body}`
+  }
+
+  const handleAgendaActie = () => {
+    const nu = new Date()
+    const overEenWeek = new Date(nu.getTime() + 7 * 24 * 60 * 60 * 1000)
+    const formatDate = (d) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
+    const titel = encodeURIComponent('InCultuur actie')
+    const details = encodeURIComponent(`Mijn actie uit Module ${module.nr} (${module.titel}):\n\n${volledigeActie}`)
+    const start = formatDate(overEenWeek)
+    const end = formatDate(new Date(overEenWeek.getTime() + 60 * 60 * 1000))
+    window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${titel}&details=${details}&dates=${start}/${end}`, '_blank')
+  }
+
+  const handleLinkedIn = () => {
+    const tekst = `Vandaag heb ik de InCultuur Boost gedaan over toegankelijkheid en inclusie in de cultuursector.\n\nMijn actie: "${volledigeActie}"\n\n#incultuur #toegankelijkheid #kunstencultuur #denhaag`
+    navigator.clipboard.writeText(tekst).then(() => {
+      setLinkedInGekopieerd(true)
+      setTimeout(() => setLinkedInGekopieerd(false), 4000)
+      setTimeout(() => window.open('https://www.linkedin.com/feed/', '_blank'), 400)
+    }).catch(() => {
+      window.open('https://www.linkedin.com/feed/', '_blank')
+    })
   }
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', background: 'white' }}>
-      <Sidebar actief="modules" voortgang={voortgang} />
+      <Sidebar actief="modules" voortgang={voortgang} profiel={profiel} />
 
       <main style={{ marginLeft: isMobiel ? 0 : '220px', flex: 1, overflowX: 'hidden' }}>
 
         {/* Hero */}
-        <div style={{ background: blauw, padding: isMobiel ? '4rem 1.5rem 2rem 1.5rem' : '3rem 2.5rem', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${fotoMap[module.nr]})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.3 }} />
+        <div style={{ background: groenDark, padding: isMobiel ? '4rem 1.5rem 2rem' : '3rem 2.5rem', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${fotoMap[module.nr]})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.25 }} />
           <div style={{ position: 'relative', zIndex: 1 }}>
-            {!isMobiel && <p style={{ color: groen, fontWeight: '600', fontSize: '0.85rem', marginBottom: '0.5rem', letterSpacing: '0.05em' }}>MODULE {module.nr} · {module.duur}</p>}
-            <h1 style={{ color: 'white', fontSize: isMobiel ? '1.4rem' : '2rem', margin: '0 0 0.75rem' }}>{module.titel}</h1>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>{module.subtitel}</p>
-            {isMobiel && <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.8rem', marginTop: '0.5rem' }}>⏱ {module.duur}</p>}
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontWeight: '600', fontSize: '0.8rem', marginBottom: '0.5rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              Module {module.nr} · {module.duur}
+            </p>
+            <h1 style={{ color: 'white', fontSize: isMobiel ? '1.4rem' : '1.9rem', margin: '0 0 0.5rem', fontWeight: '700' }}>
+              {module.titel}
+            </h1>
+            <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.95rem', margin: '0 0 0.5rem', fontStyle: 'italic' }}>
+              {module.subtitel}
+            </p>
+            <div style={{ display: 'inline-block', background: 'rgba(255,255,255,0.15)', padding: '3px 10px', borderRadius: '20px', fontSize: '0.75rem', color: 'rgba(255,255,255,0.85)' }}>
+              {module.doelgroep}
+            </div>
           </div>
         </div>
 
-        {/* Stappen navigatie */}
-        <div style={{ background: 'white', borderBottom: '1px solid #eee', padding: '0 1.5rem', display: 'flex', gap: '1rem', overflowX: 'auto' }}>
-          {stappen.map((s, i) => (
-            <button key={s} onClick={() => { setStap(s); window.scrollTo(0, 0) }} style={{ padding: '1rem 0', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '0.85rem', fontWeight: stap === s ? '600' : '400', color: stap === s ? blauw : '#555', borderBottom: stap === s ? `2px solid ${blauw}` : '2px solid transparent', whiteSpace: 'nowrap' }}>
-              {i + 1}. {stapNamen[s]}
+        {/* Stap tabs */}
+        <div style={{ background: 'white', borderBottom: '1px solid #eee', padding: '0 1.5rem', display: 'flex', gap: '0', overflowX: 'auto' }}>
+          {[
+            { id: 'intro', label: '1. Introductie' },
+            { id: 'reflectie', label: '2. Kijk naar je werk' },
+            { id: 'actie', label: '3. Aan de slag' },
+          ].map((s) => (
+            <button
+              key={s.id}
+              onClick={() => { setStap(s.id); window.scrollTo(0, 0) }}
+              style={{
+                padding: '1rem 0.75rem',
+                border: 'none',
+                background: 'transparent',
+                cursor: 'pointer',
+                fontSize: isMobiel ? '0.8rem' : '0.88rem',
+                fontWeight: stap === s.id ? '700' : '400',
+                color: stap === s.id ? groenDark : '#444',
+                borderBottom: stap === s.id ? `2.5px solid ${groen}` : '2.5px solid transparent',
+                whiteSpace: 'nowrap',
+                fontFamily: 'system-ui, sans-serif',
+              }}
+            >
+              {s.label}
             </button>
           ))}
         </div>
 
         {/* Inhoud */}
-        <div style={{ padding: isMobiel ? '1.25rem 1rem' : '2.5rem', overflowX: 'hidden', wordBreak: 'break-word' }}>
+        <div style={{ padding: isMobiel ? '1.5rem 1.1rem' : '2.5rem', maxWidth: '760px' }}>
 
+          {/* STAP 1: INTRO */}
           {stap === 'intro' && (
-            <div style={{ maxWidth: '720px' }}>
-              <p style={{ fontSize: isMobiel ? '0.95rem' : '1.05rem', lineHeight: '1.8', color: '#444', marginBottom: '2rem' }}>{module.intro}</p>
-              <div style={{ background: 'white', borderRadius: '12px', padding: '2rem', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', marginBottom: '2rem' }}>
-                <h2 style={{ color: blauw, marginTop: 0, marginBottom: '1.25rem', fontSize: '1.1rem' }}>Na deze module kun je...</h2>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div>
+              <div style={{ background: '#f0fafa', borderRadius: '12px', padding: '1.5rem', marginBottom: '1.5rem', borderLeft: `4px solid ${groen}` }}>
+                {module.intro.split('\n\n').map((alinea, i) => (
+                  <p key={i} style={{ margin: i < module.intro.split('\n\n').length - 1 ? '0 0 1rem' : 0, lineHeight: '1.8', color: '#333', fontSize: isMobiel ? '0.92rem' : '1rem' }}>
+                    {alinea}
+                  </p>
+                ))}
+              </div>
+
+              <div style={{ background: '#FDF0DC', borderRadius: '12px', padding: '1.25rem 1.5rem', marginBottom: '1.5rem', border: '1px solid #f0d090' }}>
+                <p style={{ margin: '0 0 0.5rem', fontWeight: '700', fontSize: '0.82rem', letterSpacing: '0.07em', color: '#7A4A05', textTransform: 'uppercase' }}>
+                  Denk hier even over na
+                </p>
+                <p style={{ margin: 0, color: '#5a3a0a', lineHeight: '1.7', fontSize: isMobiel ? '0.92rem' : '0.98rem', fontStyle: 'italic' }}>
+                  {module.denkVraag}
+                </p>
+              </div>
+
+              <div style={{ background: 'white', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', marginBottom: '2rem' }}>
+                <h3 style={{ color: '#1a1a1a', margin: '0 0 1rem', fontSize: '1rem' }}>Na deze module kun je...</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                   {module.leerdoelen.map((doel, i) => (
                     <div key={i} style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
-                      <span style={{ color: groen, fontWeight: 'bold', flexShrink: 0 }}>✓</span>
-                      <span style={{ color: '#444', fontSize: isMobiel ? '0.9rem' : '1rem' }}>{doel}</span>
+                      <span style={{ color: groen, fontWeight: '700', flexShrink: 0, marginTop: '2px' }}>✓</span>
+                      <span style={{ color: '#333', fontSize: isMobiel ? '0.9rem' : '0.95rem', lineHeight: '1.5' }}>{doel}</span>
                     </div>
                   ))}
                 </div>
               </div>
-              <button onClick={volgendeStap} style={{ padding: '0.85rem 2rem', background: blauw, color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', width: isMobiel ? '100%' : 'auto' }}>
-                Volgende →
+
+
+              <button onClick={volgendeStap} style={{ padding: '0.9rem 2rem', background: groen, color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', width: isMobiel ? '100%' : 'auto' }}>
+                Kijk naar je eigen werk →
               </button>
             </div>
           )}
 
-          {stap === 'inhoud' && module.inhoud && (
-            <div style={{ maxWidth: '860px' }}>
-              <div style={{ background: 'white', borderRadius: '12px', padding: isMobiel ? '1.5rem' : '2.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', marginBottom: '2rem' }}>
-                {module.inhoud.map((blok, i) => {
-                  if (blok.type === 'tekst') return (
-                    <div key={i} style={{ marginBottom: i < module.inhoud.length - 1 ? '2rem' : 0 }}>
-                      <h2 style={{ color: blauw, marginTop: 0, marginBottom: '0.6rem', fontSize: '1.1rem' }}>{blok.titel}</h2>
-                      <p style={{ fontSize: isMobiel ? '0.9rem' : '1rem', lineHeight: '1.85', color: '#444', margin: 0 }}>{blok.tekst}</p>
-                    </div>
-                  )
-                  if (blok.type === 'quote') return (
-                    <div key={i} style={{ borderLeft: `4px solid ${groen}`, background: '#f0fdf9', borderRadius: '0 8px 8px 0', padding: '1.25rem 1.5rem', margin: '2rem 0' }}>
-                      <p style={{ fontSize: '1.05rem', lineHeight: '1.7', color: '#1a4a3a', fontStyle: 'italic', margin: '0 0 0.6rem' }}>"{blok.tekst}"</p>
-                      <p style={{ margin: 0, fontSize: '0.82rem', color: '#555' }}>— {blok.auteur}</p>
-                    </div>
-                  )
-                  if (blok.type === 'foto') return (
-                    <div key={i} style={{ margin: '1rem 0', borderRadius: '12px', overflow: 'hidden' }}>
-                      <img src={blok.url} alt={blok.alt} style={{ width: '100%', height: '280px', objectFit: 'cover', display: 'block' }} />
-                    </div>
-                  )
-                  return null
-                })}
-              </div>
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <button onClick={vorigeStap} style={{ padding: '0.85rem 2rem', background: 'white', color: blauw, border: `1px solid ${blauw}`, borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', flex: isMobiel ? 1 : 'none' }}>← Terug</button>
-                <button onClick={volgendeStap} style={{ padding: '0.85rem 2rem', background: blauw, color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', flex: isMobiel ? 1 : 'none' }}>Naar de quiz →</button>
-              </div>
-            </div>
-          )}
+          {/* STAP 2: REFLECTIE */}
+          {stap === 'reflectie' && (
+            <div>
+              <h2 style={{ color: '#1a1a1a', margin: '0 0 0.5rem', fontSize: isMobiel ? '1.2rem' : '1.4rem' }}>
+                Kijk naar je eigen werk
+              </h2>
+              <p style={{ color: '#444', marginBottom: '2rem', lineHeight: '1.65', fontSize: '0.95rem' }}>
+                Beantwoord de drie vragen hieronder. Er zijn geen goede of foute antwoorden — het gaat om jouw eigen reflectie. Je antwoorden worden opgeslagen zodat je ze later kunt teruglezen.
+              </p>
 
-          {stap === 'video' && module.video && (
-            <div style={{ maxWidth: '720px' }}>
-              <p style={{ fontSize: isMobiel ? '0.9rem' : '1.05rem', lineHeight: '1.8', color: '#444', marginBottom: '1.5rem' }}>{module.videotekst}</p>
-              <div style={{ borderRadius: '12px', overflow: 'hidden', marginBottom: '2rem' }}>
-                <iframe width="100%" height={isMobiel ? '220' : '380'} src={module.video} title="Module video" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ display: 'block' }} />
-              </div>
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <button onClick={vorigeStap} style={{ padding: '0.85rem 2rem', background: 'white', color: blauw, border: `1px solid ${blauw}`, borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', flex: isMobiel ? 1 : 'none' }}>← Terug</button>
-                <button onClick={volgendeStap} style={{ padding: '0.85rem 2rem', background: blauw, color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', flex: isMobiel ? 1 : 'none' }}>Naar de quiz →</button>
-              </div>
-            </div>
-          )}
-
-          {stap === 'quiz' && (
-            <div style={{ maxWidth: '720px' }}>
-              <h2 style={{ color: blauw, marginTop: 0 }}>Quiz</h2>
-              <p style={{ color: '#555', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Beantwoord alle vragen correct om verder te gaan.</p>
-              {module.quiz.map((vraag, i) => {
-                const antwoord = quizAntwoorden[i]
-                const isGoed = antwoord?.correct
-                const gekozenOptie = antwoord?.gekozen
-
-                return (
-                  <div key={i} style={{ background: 'white', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', marginBottom: '1rem', border: isGoed ? `2px solid ${groen}` : antwoord && !isGoed ? '2px solid #ef4444' : '2px solid transparent' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-                      {isGoed && <span style={{ color: groen }}>✓</span>}
-                      {antwoord && !isGoed && <span style={{ color: '#ef4444' }}>✗</span>}
-                      <p style={{ fontWeight: '600', color: '#222', margin: 0, fontSize: isMobiel ? '0.9rem' : '1rem' }}>{i + 1}. {vraag.vraag}</p>
+              {module.reflectieVragen.map((vraag, i) => (
+                <div key={vraag.id} style={{ background: 'white', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', marginBottom: '1.25rem' }}>
+                  <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                    <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: groen, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.82rem', fontWeight: '700', flexShrink: 0 }}>
+                      {i + 1}
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
-                      {vraag.opties.map((optie, j) => {
-                        const geprobeerd = antwoord?.geprobeerd?.includes(j)
-                        const isJuist = j === vraag.correct
-                        let bg = '#f8f9fa'
-                        let border = '1px solid #eee'
-                        let kleur = '#333'
-                        if (isGoed && isJuist) { bg = '#f0fdf4'; border = `1px solid ${groen}`; kleur = '#166534' }
-                        else if (geprobeerd && !isJuist) { bg = '#fff5f5'; border = '1px solid #fca5a5'; kleur = '#991b1b' }
-                        return (
-                          <div key={j} onClick={() => !isGoed && handleAntwoord(i, j)} style={{ padding: '0.75rem 1rem', borderRadius: '8px', background: bg, border, cursor: isGoed ? 'default' : 'pointer', fontSize: isMobiel ? '0.88rem' : '0.95rem', color: kleur, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            {isGoed && isJuist && <span>✓</span>}
-                            {geprobeerd && !isJuist && <span>✗</span>}
-                            {optie}
-                          </div>
-                        )
-                      })}
-                    </div>
-                    <div style={{ minHeight: '80px', padding: '0.75rem 1rem', borderRadius: '8px', background: antwoord ? (isGoed ? '#f0fdf4' : '#fff5f5') : '#f8f9fa', border: antwoord ? (isGoed ? `1px solid ${groen}` : '1px solid #fca5a5') : '1px solid #eee' }}>
-                      {antwoord ? (
-                        <>
-                          <p style={{ margin: '0 0 0.25rem', fontSize: '0.88rem', fontWeight: '600', color: isGoed ? '#166534' : '#991b1b' }}>
-                            {isGoed ? '✓ Goed!' : '✗ Niet helemaal.'}
-                          </p>
-                          <p style={{ margin: 0, fontSize: '0.88rem', color: '#444', lineHeight: '1.5' }}>
-                            {vraag.toelichtingen ? vraag.toelichtingen[gekozenOptie] : vraag.toelichting}
-                          </p>
-                          {!isGoed && <p style={{ margin: '0.5rem 0 0', fontSize: '0.82rem', color: '#555' }}>Probeer het opnieuw.</p>}
-                        </>
-                      ) : (
-                        <p style={{ margin: 0, fontSize: '0.88rem', color: '#999' }}>Kies een antwoord om toelichting te zien.</p>
-                      )}
-                    </div>
+                    <h3 style={{ margin: 0, color: '#1a1a1a', fontSize: isMobiel ? '0.95rem' : '1rem', lineHeight: '1.4', fontWeight: '600' }}>
+                      {vraag.vraag}
+                    </h3>
                   </div>
-                )
-              })}
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '1rem', flexWrap: 'wrap' }}>
-                <button onClick={vorigeStap} style={{ padding: '0.85rem 2rem', background: 'white', color: blauw, border: `1px solid ${blauw}`, borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', flex: isMobiel ? 1 : 'none' }}>← Terug</button>
-                {alleGoed ? (
-                  <button onClick={volgendeStap} style={{ padding: '0.85rem 2rem', background: blauw, color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', flex: isMobiel ? 1 : 'none' }}>
-                    Naar het actiepunt →
-                  </button>
-                ) : (
-                  <p style={{ color: '#555', fontSize: '0.85rem', margin: 0 }}>Beantwoord alle vragen correct om verder te gaan.</p>
-                )}
+                  <p style={{ margin: '0 0 0.75rem', color: '#555', fontSize: '0.85rem', lineHeight: '1.6', paddingLeft: '2px' }}>
+                    {vraag.toelichting}
+                  </p>
+                  <textarea
+                    value={reflecties[vraag.id] || ''}
+                    onChange={(e) => setReflecties({ ...reflecties, [vraag.id]: e.target.value })}
+                    placeholder={vraag.placeholder}
+                    rows={4}
+                    style={{
+                      width: '100%', padding: '0.75rem',
+                      border: '1.5px solid #e0e0e0', borderRadius: '8px',
+                      fontSize: '0.92rem', fontFamily: 'system-ui, sans-serif',
+                      resize: 'vertical', lineHeight: '1.6', color: '#333',
+                      outline: 'none', transition: 'border-color 0.15s',
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = groen}
+                    onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
+                  />
+                </div>
+              ))}
+
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+                <button onClick={vorigeStap} style={{ padding: '0.9rem 1.5rem', background: 'white', color: '#333', border: '1.5px solid #ddd', borderRadius: '8px', fontSize: '0.95rem', fontWeight: '600', cursor: 'pointer', flex: isMobiel ? 1 : 'none' }}>
+                  ← Terug
+                </button>
+                <button
+                  onClick={volgendeStap}
+                  disabled={!reflectiesIngevuld}
+                  style={{
+                    padding: '0.9rem 2rem',
+                    background: reflectiesIngevuld ? groen : '#bbb',
+                    color: 'white', border: 'none', borderRadius: '8px',
+                    fontSize: '0.95rem', fontWeight: '600',
+                    cursor: reflectiesIngevuld ? 'pointer' : 'default',
+                    flex: isMobiel ? 2 : 'none',
+                  }}
+                >
+                  Naar de actie-opdracht →
+                </button>
               </div>
+              {!reflectiesIngevuld && (
+                <p style={{ color: '#555', fontSize: '0.82rem', marginTop: '0.6rem' }}>
+                  Beantwoord alle drie de vragen om verder te gaan.
+                </p>
+              )}
             </div>
           )}
 
-          {stap === 'actiepunt' && (
-            <div style={{ maxWidth: '720px' }}>
-              <div style={{ background: 'white', borderRadius: '12px', padding: '2rem', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', marginBottom: '1.5rem' }}>
-                <h2 style={{ color: blauw, marginTop: 0 }}>Jouw actiepunt</h2>
-                <p style={{ color: '#444', lineHeight: '1.7', fontSize: isMobiel ? '0.9rem' : '1rem' }}>{module.actiepuntTekst || module.actiepunt}</p>
-                {module.actiepuntTip && (
-                  <div style={{ background: '#f8f9ff', border: `1px solid ${blauw}20`, borderRadius: '8px', padding: '1.25rem', marginTop: '1rem' }}>
-                    <p style={{ color: blauw, fontWeight: '600', margin: '0 0 0.5rem' }}>Tip</p>
-                    <p style={{ color: '#555', margin: 0, fontSize: '0.9rem' }}>{module.actiepuntTip}</p>
-                  </div>
-                )}
-              </div>
+          {/* STAP 3: ACTIE */}
+          {stap === 'actie' && (
+            <div>
+              <h2 style={{ color: '#1a1a1a', margin: '0 0 0.5rem', fontSize: isMobiel ? '1.2rem' : '1.4rem' }}>
+                Actie-opdracht
+              </h2>
+              <p style={{ color: '#444', marginBottom: '1.5rem', lineHeight: '1.65', fontSize: '0.95rem' }}>
+                Kies één concrete verbetering die jij kunt doorvoeren. Maak hem zo specifiek mogelijk.
+              </p>
 
-              {module.schuivers && (
-                <div style={{ background: 'white', borderRadius: '12px', padding: '2rem', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', marginBottom: '1.5rem' }}>
-                  <h2 style={{ color: blauw, marginTop: 0, marginBottom: '1.5rem', fontSize: '1.1rem' }}>Hoe toegankelijk is jouw organisatie?</h2>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                    {module.schuivers.map((schuiver, i) => (
-                      <div key={i}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.3rem' }}>
-                          <div style={{ flex: 1, marginRight: '1rem' }}>
-                            <span style={{ fontWeight: '600', color: '#222', fontSize: '0.95rem' }}>{schuiver.titel}</span>
-                            <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: '#555' }}>{schuiver.subtitel}</p>
-                          </div>
-                          <span style={{ fontWeight: 'bold', color: blauw, fontSize: '1.1rem', flexShrink: 0 }}>{schuivers[i] || 5}/10</span>
-                        </div>
-                        <input type="range" min="1" max="10" value={schuivers[i] || 5} onChange={(e) => setSchuivers({ ...schuivers, [i]: parseInt(e.target.value) })} style={{ width: '100%', accentColor: blauw }} />
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#555', marginTop: '0.2rem' }}>
-                          <span>Nog niet aanwezig</span>
-                          <span>Volledig aanwezig</span>
-                        </div>
-                      </div>
+              <div style={{ background: 'white', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', marginBottom: '1.25rem' }}>
+                <p style={{ margin: '0 0 1rem', fontWeight: '600', color: '#1a1a1a', fontSize: '0.95rem' }}>
+                  {module.actieOpdracht.prefix}
+                </p>
+                <textarea
+                  value={actie}
+                  onChange={(e) => setActie(e.target.value)}
+                  placeholder={module.actieOpdracht.placeholder}
+                  rows={3}
+                  style={{
+                    width: '100%', padding: '0.75rem',
+                    border: '1.5px solid #e0e0e0', borderRadius: '8px',
+                    fontSize: '0.95rem', fontFamily: 'system-ui, sans-serif',
+                    resize: 'vertical', lineHeight: '1.6', color: '#333',
+                    outline: 'none',
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = groen}
+                  onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
+                />
+                <div style={{ marginTop: '0.75rem' }}>
+                  <p style={{ fontSize: '0.8rem', color: '#555', marginBottom: '0.4rem' }}>Voorbeelden:</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                    {module.actieOpdracht.voorbeelden.map((vb, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setActie(vb)}
+                        style={{
+                          background: 'none', border: 'none', cursor: 'pointer',
+                          textAlign: 'left', color: groen, fontSize: '0.82rem',
+                          padding: '0.2rem 0', fontFamily: 'system-ui',
+                          textDecoration: 'underline',
+                        }}
+                      >
+                        {module.actieOpdracht.prefix} {vb}
+                      </button>
                     ))}
                   </div>
-                  <div style={{ marginTop: '2rem', padding: '1.25rem', borderRadius: '10px', background: '#f8f9ff', border: `1px solid ${blauw}20` }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                      <span style={{ fontSize: '1.5rem' }}>📊</span>
-                      <span style={{ fontWeight: '700', color: blauw, fontSize: '1.1rem' }}>Gemiddelde score: {gemiddeldeScore.toFixed(1)}/10</span>
-                    </div>
-                    <p style={{ margin: 0, color: scanFeedback(gemiddeldeScore).kleur, fontWeight: '600', fontSize: '0.95rem' }}>
-                      {scanFeedback(gemiddeldeScore).tekst}
-                    </p>
+                </div>
+              </div>
+
+              {actieIngevuld && (
+                <div style={{ background: '#f0fafa', borderRadius: '12px', padding: '1.25rem', marginBottom: '1.5rem', border: `1px solid ${groen}40` }}>
+                  <p style={{ margin: '0 0 1rem', fontWeight: '700', fontSize: '0.82rem', letterSpacing: '0.07em', color: groenDark, textTransform: 'uppercase' }}>
+                    Wat doe je met je actie?
+                  </p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+
+                    <button onClick={handleMailActie} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.85rem 1rem', background: 'white', border: '1.5px solid #ddd', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem', color: '#333', fontFamily: 'system-ui', textAlign: 'left', width: '100%' }}>
+                      <span style={{ fontSize: '1.2rem' }}>✉️</span>
+                      <div>
+                        <div style={{ fontWeight: '600' }}>Stuur actie naar mijn e-mail</div>
+                        <div style={{ fontSize: '0.78rem', color: '#555' }}>Je ontvangt je actie als herinnering op {user?.email}</div>
+                      </div>
+                    </button>
+
+                    <button onClick={handleAgendaActie} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.85rem 1rem', background: 'white', border: '1.5px solid #ddd', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem', color: '#333', fontFamily: 'system-ui', textAlign: 'left', width: '100%' }}>
+                      <span style={{ fontSize: '1.2rem' }}>📅</span>
+                      <div>
+                        <div style={{ fontWeight: '600' }}>Zet in Google Agenda</div>
+                        <div style={{ fontSize: '0.78rem', color: '#555' }}>Opent Google Agenda met je actie al ingevuld — voor over een week</div>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={handleLinkedIn}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '0.75rem',
+                        padding: '0.85rem 1rem',
+                        background: linkedInGekopieerd ? '#E0F5F4' : 'white',
+                        border: linkedInGekopieerd ? `1.5px solid ${groen}` : '1.5px solid #ddd',
+                        borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem',
+                        color: '#333', fontFamily: 'system-ui', textAlign: 'left', width: '100%',
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      <span style={{ fontSize: '1.2rem' }}>💼</span>
+                      <div>
+                        <div style={{ fontWeight: '600', color: linkedInGekopieerd ? groenDark : '#333' }}>
+                          {linkedInGekopieerd ? '✓ Tekst gekopieerd! Plak in LinkedIn' : 'Delen op LinkedIn'}
+                        </div>
+                        <div style={{ fontSize: '0.78rem', color: '#555' }}>
+                          {linkedInGekopieerd
+                            ? 'LinkedIn opent zo — druk Cmd+V of Ctrl+V om te plakken'
+                            : 'Kopieert je tekst automatisch en opent LinkedIn'}
+                        </div>
+                      </div>
+                    </button>
+
                   </div>
                 </div>
               )}
 
-              <button onClick={handleAfgerond} style={{ padding: '0.85rem 2rem', background: groen, color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', width: isMobiel ? '100%' : 'auto' }}>
-                Module afronden ✓
-              </button>
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <button onClick={vorigeStap} style={{ padding: '0.9rem 1.5rem', background: 'white', color: '#333', border: '1.5px solid #ddd', borderRadius: '8px', fontSize: '0.95rem', fontWeight: '600', cursor: 'pointer', flex: isMobiel ? 1 : 'none' }}>
+                  ← Terug
+                </button>
+                <button
+                  onClick={handleAfgerond}
+                  disabled={!actieIngevuld || opgeslagen}
+                  style={{
+                    padding: '0.9rem 2rem',
+                    background: actieIngevuld && !opgeslagen ? groen : '#bbb',
+                    color: 'white', border: 'none', borderRadius: '8px',
+                    fontSize: '0.95rem', fontWeight: '600',
+                    cursor: actieIngevuld && !opgeslagen ? 'pointer' : 'default',
+                    flex: isMobiel ? 2 : 'none',
+                  }}
+                >
+                  {opgeslagen ? '✓ Opgeslagen! Terug naar dashboard...' : 'Module afronden ✓'}
+                </button>
+              </div>
+              {!actieIngevuld && (
+                <p style={{ color: '#555', fontSize: '0.82rem', marginTop: '0.6rem' }}>
+                  Vul je actie-opdracht in om de module af te ronden.
+                </p>
+              )}
             </div>
           )}
         </div>

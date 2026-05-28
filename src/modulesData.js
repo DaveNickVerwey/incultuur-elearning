@@ -1,223 +1,254 @@
 export const modulesData = [
   {
     nr: 1,
-    titel: 'Toegankelijkheid in één oogopslag',
-    subtitel: 'Basiskennis · wetgeving · drie vormen',
+    titel: 'Makers van cultuur',
+    subtitel: 'Voor wie maak jij eigenlijk cultuur?',
+    doelgroep: 'Programmeurs · curatoren · artiesten · educators',
     duur: '15 min',
-    intro: 'Toegankelijkheid gaat over meer dan een rolstoelhellingbaan. In deze module ontdek je wat toegankelijkheid écht betekent, welke wet- en regelgeving er geldt en hoe je de drie vormen van toegankelijkheid herkent in jouw eigen organisatie.',
-    inhoud: [
-      { type: 'tekst', titel: 'Toegankelijkheid is een grondrecht', tekst: 'Toch is het in de cultuursector nog lang geen vanzelfsprekendheid. Veel culturele instellingen zijn gebouwd in een tijd waarin toegankelijkheid geen prioriteit was — en dat merk je. Smalle deuren, hoge drempels, websites die niet werken met een schermlezer, communicatie die alleen mensen bereikt die al bekend zijn met het aanbod.' },
-      { type: 'foto', url: 'https://images.unsplash.com/photo-1554907984-15263bfd63bd?w=1200', alt: 'Museum entree' },
-      { type: 'tekst', titel: 'Verder dan fysieke drempels', tekst: 'Toegankelijkheid gaat over wie zich welkom voelt. Over wie de weg weet te vinden. Over wie zich herkent in het aanbod, de communicatie en de mensen die er werken. De Nederlandse overheid heeft zich met het ratificeren van het VN-verdrag inzake de rechten van personen met een handicap (2016) verplicht om gelijke participatie voor iedereen te waarborgen. Voor culturele instellingen betekent dit: je bent verplicht om stappen te zetten — niet als gunst, maar als recht.' },
-      { type: 'quote', tekst: 'Wij dachten dat we toegankelijk waren. Totdat we mensen met een beperking vroegen mee te lopen door ons gebouw. Na twintig minuten hadden we een lijst van dertig verbeterpunten.', auteur: 'Directeur middelgroot museum, deelnemer InCultuur programma' },
-      { type: 'foto', url: 'https://images.unsplash.com/photo-1573497491208-6b1acb260507?w=1200', alt: 'Diverse groep mensen in gesprek' },
-      { type: 'tekst', titel: 'Drie vormen die elkaar versterken', tekst: 'Fysieke toegankelijkheid gaat over de gebouwde omgeving. Kan iemand in een rolstoel zelfstandig naar binnen? Is er een invalidentoilet? Zijn er geleidelijnen voor mensen met een visuele beperking? Fysieke toegankelijkheid is vaak het meest zichtbaar, maar slechts één onderdeel van het geheel.' },
-      { type: 'tekst', titel: 'Digitaal en sociaal', tekst: 'Digitale toegankelijkheid gaat over je online aanwezigheid. Is je website te gebruiken met een schermlezer? Hebben je video\'s ondertitels? Sociale toegankelijkheid gaat over de vraag of mensen zich welkom voelen — een gebouw kan perfect toegankelijk zijn, maar als de sfeer niet uitnodigend is, zullen veel mensen toch afhaken. Echte inclusie vraagt om een integrale aanpak.' },
-    ],
+    intro: `Cultuur is bedoeld om mensen te raken en samen te brengen. Toch sluiten (les)programma's, tentoonstellingen of voorstellingen soms onbedoeld mensen uit — simpelweg omdat niet iedereen is meegenomen in het maakproces.
+
+We kunnen cultuur toegankelijk maken. En we kunnen toegankelijke en inclusieve cultuur maken. Het één is niet beter dan het andere. Maar juist bij de tweede optie ontstaat creatieve ruimte om toegankelijkheid te laten bijdragen aan echte inclusie én aan artistieke kwaliteit.
+
+Inclusief maken, programmeren, cureren en lesgeven betekent nieuwsgierig blijven naar hoe verschillende mensen cultuur beleven. Niet als beperking van creativiteit — maar juist als verrijking van artistieke kwaliteit en publieksbeleving.`,
+
+    denkVraag: 'Wanneer heb jij voor het laatst stilgestaan om na te denken of je mensen met een beperking voldoende bereikt en betrekt?',
+
     leerdoelen: [
-      'Uitleggen wat toegankelijkheid betekent in de cultuursector',
-      'De belangrijkste wet- en regelgeving benoemen',
-      'De drie vormen van toegankelijkheid onderscheiden',
-      'Een eerste inschatting maken van je eigen organisatie',
+      'Uitleggen hoe inclusie bijdraagt aan artistieke kwaliteit',
+      'Herkennen wie mogelijk afhaakt bij jouw programma',
+      'Concrete aanpassingen benoemen die jouw aanbod toegankelijker maken',
+      'Een eerste stap formuleren voor je volgende project',
     ],
-    quiz: [
+
+    reflectieVragen: [
       {
-        vraag: 'Welke wet verplicht organisaties om toegankelijkheid te waarborgen?',
-        opties: ['De Wet gelijke behandeling', 'Het VN-verdrag Handicap', 'De Algemene wet bestuursrecht', 'De Wet maatschappelijke ondersteuning'],
-        correct: 1,
-        toelichtingen: [
-          'De Wet gelijke behandeling biedt wel bescherming, maar is niet de meest directe verplichting voor toegankelijkheid.',
-          'Correct! Het VN-verdrag inzake de rechten van personen met een handicap (2006) verplicht landen om gelijke participatie te waarborgen. Nederland ratificeerde dit in 2016.',
-          'De Algemene wet bestuursrecht regelt de verhouding tussen overheid en burger, maar gaat niet specifiek over toegankelijkheid.',
-          'De Wet maatschappelijke ondersteuning richt zich op zorg en ondersteuning, niet op toegankelijkheid van culturele instellingen.',
-        ],
+        id: 'centraal',
+        vraag: 'Wie stond centraal in het programma? Wiens verhaal werd verteld?',
+        toelichting: 'Kies een voorstelling, concert, expositie, evenement of (les)programma waar jij aan werkt of kort geleden aan hebt gewerkt. Denk aan diversiteitsfactoren zoals afkomst, leeftijd of beperking.',
+        placeholder: 'Beschrijf wiens verhaal centraal stond en vanuit welk perspectief...',
       },
       {
-        vraag: 'Welke drie vormen van toegankelijkheid zijn er?',
-        opties: ['Fysiek, digitaal en sociaal', 'Visueel, auditief en motorisch', 'Intern, extern en financieel', 'Architectonisch, communicatief en organisatorisch'],
-        correct: 0,
-        toelichtingen: [
-          'Correct! De drie vormen zijn fysiek (gebouw en omgeving), digitaal (online aanwezigheid) en sociaal (welkom voelen). Samen vormen ze een integraal beeld.',
-          'Visueel, auditief en motorisch zijn soorten beperkingen, geen vormen van toegankelijkheid.',
-          'Intern, extern en financieel is geen gangbare indeling van toegankelijkheid.',
-          'Dit zijn geen erkende vormen van toegankelijkheid in de cultuursector.',
-        ],
+        id: 'afhaken',
+        vraag: 'Wie zou mogelijk afhaken?',
+        toelichting: 'Probeer minimaal 2 groepen te benoemen die mogelijk niet meedoen of zich niet aangesproken voelen.',
+        placeholder: 'Benoem minimaal twee groepen en waarom zij mogelijk afhaken...',
       },
       {
-        vraag: 'Wat verstaan we onder sociale toegankelijkheid?',
-        opties: ['Een toegankelijke website', 'Een goed bereikbare locatie', 'Een omgeving waar iedereen zich welkom voelt', 'Voldoende parkeerplaatsen'],
-        correct: 2,
-        toelichtingen: [
-          'Een toegankelijke website valt onder digitale toegankelijkheid, niet sociale toegankelijkheid.',
-          'Een goed bereikbare locatie valt onder fysieke toegankelijkheid.',
-          'Correct! Sociale toegankelijkheid gaat over of mensen zich welkom en geaccepteerd voelen — ongeacht achtergrond, beperking of identiteit.',
-          'Parkeerplaatsen vallen onder fysieke toegankelijkheid.',
-        ],
+        id: 'aanpassing',
+        vraag: 'Welke aanpassing zou jouw programma toegankelijker maken?',
+        toelichting: 'Denk bijvoorbeeld aan: dove performers, audiodescriptie, een prikkelarme ruimte, inclusievere casting, taalniveau aanpassen, meer diverse groep makers.',
+        placeholder: 'Beschrijf één concrete aanpassing die je zou kunnen doorvoeren...',
       },
     ],
-    actiepuntTekst: 'Hoe toegankelijk is jouw organisatie al? Geef per thema aan in welke mate dit al aanwezig is in jouw instelling. Schuif de balk naar de score die het beste bij jullie situatie past.',
-    actiepuntTip: 'Wees eerlijk — deze scan is voor jezelf. De uitkomst helpt je om te bepalen waar je als eerste mee aan de slag kunt.',
-    schuivers: [
-      { titel: 'Fysieke toegankelijkheid', subtitel: 'Ingang, toilet, lift, routing — kan iedereen zelfstandig binnen komen en rond bewegen?' },
-      { titel: 'Digitale toegankelijkheid', subtitel: 'Website, social media, ticketshop — werkt alles ook voor mensen met een beperking?' },
-      { titel: 'Sociale toegankelijkheid', subtitel: 'Voelt iedereen zich welkom? Is diversiteit zichtbaar in team en aanbod?' },
-      { titel: 'Communicatie', subtitel: 'Gebruik je begrijpelijke taal, voldoende contrast en bereik je diverse doelgroepen?' },
-      { titel: 'Programmering', subtitel: 'Is je aanbod toegankelijk en relevant voor mensen met verschillende achtergronden en beperkingen?' },
-      { titel: 'Beleid', subtitel: 'Is toegankelijkheid verankerd in het organisatiebeleid en de strategie?' },
-      { titel: 'Medewerkers', subtitel: 'Hebben medewerkers kennis van en bewustzijn over toegankelijkheid?' },
+
+    actieOpdracht: {
+      prefix: 'Bij onze volgende activiteit wil ik...',
+      placeholder: 'bijvoorbeeld: onderzoeken of boventiteling of gebarentaal mogelijk is',
+      voorbeelden: [
+        'onderzoeken of boventiteling of gebarentaal mogelijk is.',
+        'een prikkelarme plek opnemen in het productieplan.',
+        'bij programmering breder kijken dan ons vaste netwerk.',
+        'een diverse groep makers betrekken bij de ontwikkeling.',
+      ],
+    },
+
+    tips: [
+      { tekst: 'Maak kunst en cultuur toegankelijk voor iedereen: 5 tips', url: 'https://www.cultuurschakel.nl/kennisbank/maak-kunst-en-cultuur-toegankelijk-voor-iedereen-5-tips/' },
+      { tekst: 'Code Diversiteit & Inclusie', url: 'https://codedi.nl/' },
+      { tekst: 'Diversiteitsvlechtwerk: intersectionaliteit in beleid', url: 'https://www.movisie.nl/publicatie/diversiteitsvlechtwerk#Diversiteitsfactoren' },
     ],
-    actiepunt: 'Maak een snelle scan van jouw organisatie of locatie: welke toegankelijkheidsaspecten zijn aanwezig, welke ontbreken? Noteer minimaal drie verbeterpunten en bespreek deze met een collega.',
   },
+
   {
     nr: 2,
-    titel: 'Publieksbenadering zonder drempels',
-    subtitel: 'Communicatie · inclusie · doelgroepen',
+    titel: 'Makers van bereik',
+    subtitel: 'Begrijpt iedereen wat jij communiceert?',
+    doelgroep: 'Communicatie · social media · ticketing · publieksservice',
     duur: '15 min',
-    video: 'https://www.youtube.com/embed/LL3PUYa-Dpw',
-    videotekst: 'Toegankelijkheid is niet alleen een taak voor een handvol specialisten. Het vraagt om een cultuuromslag in de hele organisatie — van programmeurs tot HR-medewerkers, van de communicatieafdeling tot de barmensen. Juist de nieuwe generatie medewerkers en leidinggevenden in de kunst- en cultuursector heeft de kans én de verantwoordelijkheid om anders te denken. Om uit de eigen bubbel te stappen. Om niet te vragen "wie sluit ik uit?" maar "hoe zorg ik dat iedereen zich welkom voelt?". Toegankelijkheid begint niet bij een beleidsplan — het begint bij jou.',
-    intro: 'Hoe bereik je mensen die je nu nog niet bereikt? In deze module leer je hoe je inclusief communiceert, welke drempels mensen ervaren om naar een culturele instelling te gaan en hoe je die drempels kunt wegnemen.',
+    intro: `Communicatie is vaak de eerste kennismaking met een organisatie, voorstelling of tentoonstelling. Nog vóór iemand een plek binnenstapt, bepaalt taal, beeld en vormgeving of iemand zich welkom voelt.
+
+Toch is communicatie in de cultuursector niet altijd vanzelfsprekend toegankelijk. Teksten zitten soms nog vol jargon, websites missen duidelijke uitleg, en belangrijke informatie over toegankelijkheid is niet altijd zichtbaar of vindbaar.
+
+Bereik gaat daarom niet alleen over hoeveel mensen je bereikt, maar vooral over wie je daadwerkelijk binnenlaat in je verhaal.`,
+
+    denkVraag: 'Wanneer heb jij voor het laatst een communicatie-uiting gezien waarvan je dacht: "Dit is niet voor mij bedoeld?" En andersom: wie sluit jij misschien (onbedoeld) uit met jouw communicatie?',
+
     leerdoelen: [
       'Toegankelijk communiceren in taal en beeld',
-      'Verschillende doelgroepen herkennen en aanspreken',
-      'Drempels in communicatie identificeren',
+      'Herkennen wie mogelijk afhaakt bij jouw communicatie',
+      'Ontbrekende toegankelijkheidsinformatie identificeren',
       'Een concrete communicatieverbetering doorvoeren',
     ],
-    quiz: [
+
+    reflectieVragen: [
       {
-        vraag: 'Wat is een belangrijk kenmerk van toegankelijke communicatie?',
-        opties: ['Veel vakjargon gebruiken', 'Korte zinnen en begrijpelijke taal', 'Alleen digitale kanalen inzetten', 'Zo veel mogelijk informatie geven'],
-        correct: 1,
-        toelichtingen: [
-          'Vakjargon werkt juist drempelverhoging — het sluit mensen uit die niet vertrouwd zijn met de terminologie.',
-          'Correct! Helder taalgebruik, korte zinnen en een logische structuur maken communicatie toegankelijk voor iedereen.',
-          'Alleen digitaal inzetten sluit mensen uit die minder digitaal vaardig zijn of geen internet hebben.',
-          'Te veel informatie leidt juist tot overprikkeling en afhaken — minder is meer bij toegankelijke communicatie.',
-        ],
+        id: 'voor_wie',
+        vraag: 'Voor wie is deze communicatie geschreven?',
+        toelichting: 'Kies een recente communicatie-uiting: websitepagina, social media post, flyer, nieuwsbrief of ticketpagina. Mensen verschillen in taalniveau, voorkennis, digitale vaardigheden en culturele achtergrond.',
+        placeholder: 'Beschrijf voor wie de communicatie-uiting primair bedoeld is en waarom...',
       },
       {
-        vraag: 'Welke doelgroep wordt het vaakst over het hoofd gezien in culturele communicatie?',
-        opties: ['Jongeren onder de 25', 'Mensen met een beperking', 'Senioren boven de 65', 'Gezinnen met kinderen'],
-        correct: 1,
-        toelichtingen: [
-          'Jongeren worden juist vaak actief aangesproken via social media en jongerenprogrammering.',
-          'Correct! Mensen met een beperking vormen ongeveer 15% van de bevolking maar worden vaak niet meegenomen in communicatieplanning.',
-          'Senioren krijgen steeds meer aandacht via specifieke programma\'s en middagen.',
-          'Gezinnen met kinderen worden actief bereikt via familietickets en kinderprogrammering.',
-        ],
+        id: 'afhaken',
+        vraag: 'Wie zou mogelijk afhaken of niet begrijpen wat er bedoeld wordt?',
+        toelichting: 'Benoem minimaal twee groepen die mogelijk afhaken of de boodschap niet begrijpen.',
+        placeholder: 'Benoem minimaal twee groepen en waarom zij mogelijk afhaken...',
       },
       {
-        vraag: 'Wat is de belangrijkste reden waarom mensen met een beperking culturele instellingen mijden?',
-        opties: ['Te duur', 'Geen interesse', 'Onzekerheid over toegankelijkheid', 'Te ver weg'],
-        correct: 2,
-        toelichtingen: [
-          'Prijs speelt een rol, maar is niet de grootste drempel voor mensen met een beperking specifiek.',
-          'Onderzoek toont aan dat interesse er zeker is — de drempel zit in praktische onzekerheid, niet in motivatie.',
-          'Correct! Mensen weten niet of ze binnen kunnen, of er een toilet is, of de voorstelling ondertiteld is. Duidelijke informatie verlaagt deze drempel enorm.',
-          'Bereikbaarheid speelt mee, maar is niet de grootste drempel — onzekerheid over toegankelijkheid staat op nummer één.',
-        ],
+        id: 'ontbreekt',
+        vraag: 'Welke informatie ontbreekt om het echt toegankelijk te maken?',
+        toelichting: 'Denk aan: duidelijke taal, informatie over toegankelijkheid (prikkels, rolstoeltoegang), voorleesmogelijkheid, ondertiteling, betere structuur, contrast en visuele helderheid.',
+        placeholder: 'Beschrijf welke informatie of aanpassingen nog ontbreken...',
       },
     ],
-    actiepunt: 'Pas één communicatie-uiting aan volgens toegankelijke richtlijnen. Denk aan je website, een flyer of een social media post.',
-    actiepuntTip: 'Gebruik de gratis tool van Accessibility Checker om je website te scannen op toegankelijkheid.',
+
+    actieOpdracht: {
+      prefix: 'Bij onze volgende communicatie-uiting ga ik...',
+      placeholder: 'bijvoorbeeld: alt-teksten toevoegen aan al onze social media posts',
+      voorbeelden: [
+        'de teksten herschrijven in duidelijke taal zonder jargon.',
+        'alt-teksten toevoegen aan al onze social media posts.',
+        'toegankelijkheidsinformatie standaard opnemen op onze website en ticketpagina.',
+        'ondertiteling toevoegen aan onze promotievideo\'s.',
+        'checken of onze flyers begrijpelijk zijn voor nieuwe doelgroepen.',
+      ],
+    },
+
+    tips: [
+      { tekst: 'Hoe toegankelijk is jouw website?', url: 'https://ismijnsitetoegankelijk.nl/' },
+      { tekst: 'Check of je woorden B1-niveau zijn', url: 'https://ishetb1.nl/' },
+      { tekst: '6 tips om je toegankelijkheid te vergroten', url: 'https://cultuurmarketing.nl/6-tips-om-je-toegankelijkheid-te-vergroten/' },
+    ],
   },
+
   {
     nr: 3,
-    titel: 'Prikkelarm en voelbaar',
-    subtitel: 'Sensorisch · ruimte · beleving',
+    titel: 'Makers van samenwerking',
+    subtitel: 'Wie kan hier écht werken of meedoen?',
+    doelgroep: 'HR · leidinggevenden · coördinatoren',
     duur: '15 min',
-    intro: 'Niet iedereen ervaart een ruimte op dezelfde manier. In deze module leer je hoe je een prikkelarme omgeving creëert en welke kleine aanpassingen een groot verschil maken.',
+    intro: `Een inclusieve cultuursector stopt niet bij het publiek of de communicatie. Ook achter de schermen bepaalt de manier waarop je samenwerkt wie kan meedoen.
+
+Sollicitatieprocedures, werkdruk, ongeschreven regels, communicatievormen en werkplekken zijn vaak ingericht op "hoe het altijd ging". Daardoor ontstaan er drempels die niet altijd bewust bedoeld zijn, maar wel effect hebben op wie binnenkomt en blijft.
+
+Toegankelijk werken gaat over meer dan fysieke aanpassingen. Het gaat over hoe je samenwerkt, plant, communiceert en ruimte maakt voor verschillende manieren van werken, denken en ervaren.`,
+
+    denkVraag: 'Wanneer heb jij voor het laatst stilgestaan bij de vraag: "Welk perspectief is niet vertegenwoordigd in onze organisatie?" En: "Voor wie is het eigenlijk makkelijk om hier te werken?"',
+
     leerdoelen: [
-      'Uitleggen wat prikkelarme omgevingen zijn',
-      'Sensorische uitdagingen herkennen in jouw locatie',
-      'Concrete aanpassingen doorvoeren in licht, geluid en bewegwijzering',
-      'Een prikkelarme route of hoek ontwerpen',
+      'Onzichtbare drempels in samenwerking herkennen',
+      'Benoemen welke perspectieven ontbreken in jouw organisatie',
+      'Inclusieve sollicitatieprocedures beschrijven',
+      'Een eerste verbeterstap formuleren voor jouw team',
     ],
-    quiz: [
+
+    reflectieVragen: [
       {
-        vraag: 'Welke aanpassing heeft de grootste impact op een prikkelarme omgeving?',
-        opties: ['Nieuwe vloerbedekking', 'Dimbaar licht en geluidsdemping', 'Meer zitplaatsen', 'Andere kleurstelling'],
-        correct: 1,
-        toelichtingen: [
-          'Vloerbedekking kan geluid dempen maar heeft minder impact dan directe licht- en geluidsaanpassingen.',
-          'Correct! Licht en geluid zijn de grootste bronnen van prikkels. Dimbaar licht en geluidsdemping hebben de meeste impact.',
-          'Meer zitplaatsen helpt bij vermoeidheid maar pakt de sensorische prikkels zelf niet aan.',
-          'Kleur kan een rol spelen maar heeft minder impact dan licht en geluid.',
-        ],
+        id: 'makkelijk',
+        vraag: 'Wie kan hier makkelijk werken of meedoen?',
+        toelichting: 'Denk aan werkstijl, communicatie, fysieke toegankelijkheid, tempo en verwachtingen in jouw team of organisatie.',
+        placeholder: 'Beschrijf voor wie het makkelijk is om in jouw organisatie te werken en waarom...',
       },
       {
-        vraag: 'Voor welke doelgroep zijn prikkelarme voorstellingen primair bedoeld?',
-        opties: ['Senioren', 'Kinderen onder de 6', 'Mensen met autisme of sensorische gevoeligheid', 'Mensen met een visuele beperking'],
-        correct: 2,
-        toelichtingen: [
-          'Senioren profiteren soms van rustigere omgevingen, maar prikkelarme voorstellingen zijn niet primair voor hen bedoeld.',
-          'Kleine kinderen hebben andere behoeften — prikkelarme voorstellingen zijn niet specifiek voor hen ontworpen.',
-          'Correct! Mensen met autisme of sensorische gevoeligheid profiteren het meest. Maar ook mensen met ADHD of chronische vermoeidheid vinden het prettig.',
-          'Mensen met een visuele beperking hebben andere aanpassingen nodig zoals audiodescriptie.',
-        ],
+        id: 'ontbreekt',
+        vraag: 'Welk perspectief is niet vertegenwoordigd in jouw organisatie?',
+        toelichting: 'Benoem minimaal twee situaties of groepen. Denk aan diversiteitsfactoren zoals afkomst, leeftijd of beperking.',
+        placeholder: 'Benoem minimaal twee perspectieven of groepen die ontbreken...',
       },
       {
-        vraag: 'Wat is een rustige hoek in een museum?',
-        opties: ['Een afgesloten ruimte voor medewerkers', 'Een plek waar bezoekers even kunnen herstellen van prikkels', 'Een stille leeszaal', 'Een ruimte voor groepsbezoeken'],
-        correct: 1,
-        toelichtingen: [
-          'Een ruimte voor medewerkers is niet toegankelijk voor bezoekers.',
-          'Correct! Een rustige hoek is een plek waar bezoekers even kunnen decomprimeren — weg van drukte en geluid.',
-          'Een leeszaal heeft een specifieke functie; een rustige hoek is laagdrempeliger en breder toegankelijk.',
-          'Groepsruimtes zijn juist drukker — het tegenovergestelde van wat een rustige hoek beoogt.',
-        ],
+        id: 'drempels',
+        vraag: 'Waar zitten onzichtbare drempels in samenwerking?',
+        toelichting: 'Denk aan: onduidelijke sollicitatieprocedures, hoge werkdruk, geen rustplekken, impliciete communicatie, vaste verwachtingen over "hoe je werkt".',
+        placeholder: 'Beschrijf drempels die misschien niet direct zichtbaar zijn maar wel effect hebben...',
       },
     ],
-    actiepunt: 'Voer een kleine aanpassing uit in een ruimte of evenement. Denk aan het dimmen van verlichting of het toevoegen van duidelijke bewegwijzering.',
-    actiepuntTip: 'Betrek een medewerker met persoonlijke ervaring bij het ontwerpen van de aanpassing.',
+
+    actieOpdracht: {
+      prefix: 'In mijn organisatie wil ik onderzoeken of / verbeteren dat...',
+      placeholder: 'bijvoorbeeld: sollicitatieprocedures objectiever kunnen worden ingericht',
+      voorbeelden: [
+        'sollicitatieprocedures objectiever kunnen worden ingericht.',
+        'er een rustplek of prikkelarme ruimte beschikbaar komt tijdens werk of events.',
+        'werktijden flexibeler kunnen worden afgestemd op verschillende behoeften.',
+        'we explicieter maken hoe mensen ongewenst gedrag kunnen melden.',
+        'we ongeschreven regels in ons team bespreekbaar maken.',
+      ],
+    },
+
+    tips: [
+      { tekst: 'Code Diversiteit & Inclusie', url: 'https://codedi.nl/' },
+      { tekst: 'Hoe maak je werving en selectie écht inclusief?', url: 'https://werkenvoorcultuur.nl/artikelen/hoe-maak-je-werving-en-selectie-echt-inclusief/' },
+      { tekst: 'Divers talent werven in de culturele sector', url: 'https://www.ser.nl/-/media/ser/downloads/thema/diversiteitinbedrijf/publicaties/handreiking-culturele-sector.pdf' },
+      { tekst: 'handicap.nl', url: 'https://www.handicap.nl' },
+    ],
   },
+
   {
     nr: 4,
-    titel: 'Samenwerken met ervaringsdeskundigen',
-    subtitel: 'Co-creatie · inclusie · samenwerking',
+    titel: 'Makers van mogelijkheden',
+    subtitel: 'Hoe maak jij toegankelijkheid echt mogelijk?',
+    doelgroep: 'Productie · facilitair · techniek · planning',
     duur: '15 min',
-    intro: 'De beste manier om toegankelijkheid te verbeteren is door samen te werken met mensen die het zelf ervaren. In deze module leer je hoe je ervaringsdeskundigen betrekt op een gelijkwaardige manier.',
+    intro: `Toegankelijkheid wordt vaak bedacht in beleid, programmering of communicatie. Maar toegankelijkheid wordt pas echt voelbaar op het moment zelf: tijdens een festival, voorstelling of expositie.
+
+In de routing van een gebouw, de opbouw van een zaal, de planning van een evenement en de keuzes in techniek en uitvoering — daar wordt bepaald of toegankelijkheid alleen een idee blijft, of daadwerkelijk wordt ervaren door bezoekers en collega's.
+
+Een programma kan inhoudelijk nog zo toegankelijk zijn — als de uitvoering niet klopt, ontstaan alsnog drempels. Andersom kunnen kleine praktische keuzes juist een groot verschil maken in hoe welkom mensen zich voelen.`,
+
+    denkVraag: 'Wanneer heb jij voor het laatst gemerkt dat iets in de praktijk anders uitpakte dan bedoeld was? En: welke kleine aanpassing had dat verschil kunnen maken?',
+
     leerdoelen: [
-      'Uitleggen waarom ervaringsdeskundigen onmisbaar zijn',
-      'Weten hoe je een inclusief samenwerkingsproces opzet',
-      'Valkuilen in co-creatie herkennen en vermijden',
-      'Een eerste stap zetten naar samenwerking met ervaringsdeskundigen',
+      'Benoemen waar jij het verschil maakt in toegankelijkheid',
+      'Risico\'s voor toegankelijkheid in uitvoering herkennen',
+      'Kleine aanpassingen identificeren met grote impact',
+      'Toegankelijkheid standaard meenemen in productieplanning',
     ],
-    quiz: [
+
+    reflectieVragen: [
       {
-        vraag: 'Wat is de belangrijkste valkuil bij samenwerken met ervaringsdeskundigen?',
-        opties: ['Te veel vergaderen', 'Ervaringsdeskundigen alleen raadplegen aan het einde', 'Geen budget reserveren', 'Te vroeg beginnen'],
-        correct: 1,
-        toelichtingen: [
-          'Te veel vergaderen is vervelend maar niet de grootste valkuil bij co-creatie.',
-          'Correct! Ervaringsdeskundigen alleen aan het einde raadplegen maakt hun input cosmetisch. Betrek ze vanaf het begin.',
-          'Budget is belangrijk maar de timing van betrokkenheid is de meest gemaakte structurele fout.',
-          'Te vroeg beginnen is geen valkuil — vroeg beginnen is juist aan te raden.',
-        ],
+        id: 'verschil',
+        vraag: 'Waar maak jij het verschil in toegankelijkheid?',
+        toelichting: 'Denk aan jouw taken, beslissingen en invloed op uitvoering binnen productie, techniek, facilitair of planning.',
+        placeholder: 'Beschrijf momenten of taken waarbij jouw keuzes impact hebben op toegankelijkheid...',
       },
       {
-        vraag: 'Wat betekent co-creatie?',
-        opties: ['Iets maken voor een specifieke doelgroep', 'Iets maken samen met de doelgroep', 'Iets laten maken door een extern bureau', 'Iets kopiëren van een ander'],
-        correct: 1,
-        toelichtingen: [
-          'Iets maken vóór een doelgroep is niet co-creatie — de doelgroep is dan geen partner maar ontvanger.',
-          'Correct! Co-creatie betekent samen maken. De ervaringsdeskundige is een gelijkwaardige partner, geen informant.',
-          'Een extern bureau inschakelen is uitbesteden, niet co-creëren.',
-          'Kopiëren heeft niets met co-creatie te maken.',
-        ],
+        id: 'mislopen',
+        vraag: 'Waar kunnen dingen in de praktijk mislopen of onduidelijk worden?',
+        toelichting: 'Benoem minimaal twee situaties zoals routing, planning, communicatie tussen teams, opbouw of techniek.',
+        placeholder: 'Beschrijf minimaal twee situaties waar toegankelijkheid in de knel kan komen...',
       },
       {
-        vraag: 'Hoe vergoed je ervaringsdeskundigen het best voor hun inzet?',
-        opties: ['Alleen met een bedankje', 'Met een passende financiële vergoeding', 'Met gratis toegangskaarten', 'Met een certificaat'],
-        correct: 1,
-        toelichtingen: [
-          'Een bedankje erkent de bijdrage niet serieus — ervaringsdeskundigen leveren professionele kennis.',
-          'Correct! Een financiële vergoeding is de meest respectvolle erkenning. Kennis heeft waarde en verdient eerlijke beloning.',
-          'Toegangskaarten zijn een leuk gebaar maar geen serieuze vergoeding voor professionele inzet.',
-          'Een certificaat heeft symbolische waarde maar vervangt geen eerlijke financiële compensatie.',
-        ],
+        id: 'aanpassing',
+        vraag: 'Welke kleine aanpassing zou direct impact hebben op toegankelijkheid?',
+        toelichting: 'Denk aan: betere bewegwijzering, duidelijke overdracht tussen teams, rekening houden met prikkels, rustruimtes, toegankelijkheid meenemen in productieplanning.',
+        placeholder: 'Beschrijf één kleine aanpassing die je snel kunt doorvoeren...',
       },
     ],
-    actiepunt: 'Plan een gesprek of brainstorm met minstens één ervaringsdeskundige over toegankelijkheid in jouw organisatie.',
-    actiepuntTip: 'Neem contact op met InCultuur voor een lijst van ervaringsdeskundigen die beschikbaar zijn voor samenwerking.',
+
+    actieOpdracht: {
+      prefix: 'In mijn werk wil ik toegankelijkheid verbeteren door...',
+      placeholder: 'bijvoorbeeld: toegankelijkheid standaard mee te nemen in productieoverleggen',
+      voorbeelden: [
+        'toegankelijkheid standaard mee te nemen in productieoverleggen en draaiboeken.',
+        'bij opbouw en planning rekening te houden met prikkelbelasting en rustmomenten.',
+        'routing en bewegwijzering duidelijker en intuïtiever te maken voor bezoekers.',
+        'beter af te stemmen tussen techniek, productie en publieksbegeleiding.',
+        'toegankelijkheid expliciet onderdeel te maken van de technische check vóór een event.',
+      ],
+    },
+
+    tips: [
+      { tekst: 'Tips om toegankelijkheid te vergroten als culturele organisatie', url: 'https://codedi.nl/tips-om-toegankelijkheid-te-vergroten-als-culturele-organisatie' },
+      { tekst: 'accessibility.nl', url: 'https://www.accessibility.nl' },
+      { tekst: 'mkbtoegankelijk.nl', url: 'https://www.mkbtoegankelijk.nl' },
+    ],
   },
 ]
+
+// Welke rol hoort bij welke module
+export const rolNaarModule = {
+  'Programmeur / curator / artiest / educator': 1,
+  'Communicatie / social media / ticketing / publieksservice': 2,
+  'HR / leidinggevende / coördinator': 3,
+  'Productie / facilitair / techniek / planning': 4,
+  'Anders / meerdere rollen': 1,
+}
