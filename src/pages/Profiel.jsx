@@ -26,7 +26,7 @@ function Profiel() {
   useEffect(() => {
     if (user === null) navigate('/login')
   }, [user])
-  const navigate = useNavigate()
+  
 
   useEffect(() => {
     if (user === null) navigate('/login')
