@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { auth, db } from '../firebase'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { doc, setDoc } from 'firebase/firestore'
@@ -21,20 +21,14 @@ const rolNaarModule = {
 function Profiel() {
   const [user] = useAuthState(auth)
   const [stap, setStap] = useState(1)
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    if (user === null) navigate('/login')
-  }, [user])
-  
-
-  useEffect(() => {
-    if (user === null) navigate('/login')
-  }, [user])
   const [form, setForm] = useState({ naam: '', achternaam: '', organisatie: '', functie: '', rol: '' })
   const [laden, setLaden] = useState(false)
   const isMobiel = window.innerWidth < 768
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (user === null) navigate('/login')
+  }, [user])
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
@@ -76,7 +70,6 @@ function Profiel() {
       background: groenDark,
       overflow: 'hidden',
     }}>
-      {/* Theater achtergrond */}
       <div style={{
         position: 'fixed', inset: 0,
         backgroundImage: `url(${theaterFoto})`,
@@ -97,7 +90,6 @@ function Profiel() {
         minHeight: isMobiel ? '100vh' : 'auto',
       }}>
 
-        {/* Voortgangsindicator */}
         <div style={{ display: 'flex', gap: '6px', marginBottom: '2rem', marginTop: isMobiel ? '2rem' : 0 }}>
           {[1, 2].map((s) => (
             <div key={s} style={{
@@ -110,7 +102,6 @@ function Profiel() {
 
         <form onSubmit={handleSubmit}>
 
-          {/* STAP 1: Gegevens */}
           {stap === 1 && (
             <>
               <h1 style={{ margin: '0 0 0.4rem', color: '#1a1a1a', fontSize: '1.5rem' }}>Vertel ons iets over jezelf</h1>
@@ -155,20 +146,13 @@ function Profiel() {
                 type="button"
                 onClick={() => stap1Klaar && setStap(2)}
                 disabled={!stap1Klaar}
-                style={{
-                  width: '100%', padding: '0.9rem',
-                  background: stap1Klaar ? groen : '#ccc',
-                  color: 'white', border: 'none', borderRadius: '8px',
-                  fontSize: '1rem', fontWeight: '600',
-                  cursor: stap1Klaar ? 'pointer' : 'default',
-                }}
+                style={{ width: '100%', padding: '0.9rem', background: stap1Klaar ? groen : '#ccc', color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: stap1Klaar ? 'pointer' : 'default' }}
               >
                 Volgende →
               </button>
             </>
           )}
 
-          {/* STAP 2: Rolkeuze */}
           {stap === 2 && (
             <>
               <h1 style={{ margin: '0 0 0.4rem', color: '#1a1a1a', fontSize: '1.5rem' }}>Wat is jouw rol?</h1>
@@ -184,31 +168,16 @@ function Profiel() {
                     <div
                       key={rol}
                       onClick={() => setForm({ ...form, rol })}
-                      style={{
-                        padding: '1rem 1.25rem',
-                        border: selected ? `2px solid ${groen}` : '1.5px solid #e0e0e0',
-                        borderRadius: '10px',
-                        cursor: 'pointer',
-                        background: selected ? '#E0F5F4' : 'white',
-                        transition: 'all 0.15s',
-                      }}
+                      style={{ padding: '1rem 1.25rem', border: selected ? `2px solid ${groen}` : '1.5px solid #e0e0e0', borderRadius: '10px', cursor: 'pointer', background: selected ? '#E0F5F4' : 'white', transition: 'all 0.15s' }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
                         <div>
                           <div style={{ fontWeight: '600', fontSize: '0.95rem', color: '#1a1a1a', marginBottom: '3px' }}>{rol}</div>
-                          <span style={{
-                            fontSize: '11px', fontWeight: '600', padding: '2px 8px', borderRadius: '20px',
-                            background: moduleKleuren[moduleNr - 1], color: moduleTekstKleuren[moduleNr - 1]
-                          }}>
+                          <span style={{ fontSize: '11px', fontWeight: '600', padding: '2px 8px', borderRadius: '20px', background: moduleKleuren[moduleNr - 1], color: moduleTekstKleuren[moduleNr - 1] }}>
                             Start met: Module {moduleNr} – {moduleTitels[moduleNr - 1]}
                           </span>
                         </div>
-                        <div style={{
-                          width: '20px', height: '20px', borderRadius: '50%',
-                          border: selected ? `2px solid ${groen}` : '2px solid #ccc',
-                          background: selected ? groen : 'white',
-                          flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center'
-                        }}>
+                        <div style={{ width: '20px', height: '20px', borderRadius: '50%', border: selected ? `2px solid ${groen}` : '2px solid #ccc', background: selected ? groen : 'white', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           {selected && <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'white' }} />}
                         </div>
                       </div>
@@ -218,29 +187,10 @@ function Profiel() {
               </div>
 
               <div style={{ display: 'flex', gap: '0.75rem' }}>
-                <button
-                  type="button"
-                  onClick={() => setStap(1)}
-                  style={{
-                    flex: 1, padding: '0.9rem',
-                    background: 'white', color: '#1a1a1a',
-                    border: '1.5px solid #ddd', borderRadius: '8px',
-                    fontSize: '1rem', fontWeight: '600', cursor: 'pointer'
-                  }}
-                >
+                <button type="button" onClick={() => setStap(1)} style={{ flex: 1, padding: '0.9rem', background: 'white', color: '#1a1a1a', border: '1.5px solid #ddd', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer' }}>
                   ← Terug
                 </button>
-                <button
-                  type="submit"
-                  disabled={!form.rol || laden}
-                  style={{
-                    flex: 2, padding: '0.9rem',
-                    background: form.rol ? groen : '#ccc',
-                    color: 'white', border: 'none', borderRadius: '8px',
-                    fontSize: '1rem', fontWeight: '600',
-                    cursor: form.rol ? 'pointer' : 'default',
-                  }}
-                >
+                <button type="submit" disabled={!form.rol || laden} style={{ flex: 2, padding: '0.9rem', background: form.rol ? groen : '#ccc', color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: form.rol ? 'pointer' : 'default' }}>
                   {laden ? 'Opslaan...' : 'Aan de slag →'}
                 </button>
               </div>
