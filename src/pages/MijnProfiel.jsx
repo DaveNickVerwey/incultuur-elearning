@@ -65,7 +65,6 @@ function MijnProfiel() {
     setTimeout(() => setOpgeslagen(false), 3000)
   }
 
-  const afgerond = Object.values(voortgang).filter(Boolean).length
   const mijnLetter = profiel ? rolNaarLetter[profiel.rol] || 'C' : null
   const mijnDoelgroep = mijnLetter ? doelgroepSymbolen[mijnLetter] : null
 
@@ -91,18 +90,6 @@ function MijnProfiel() {
         </div>
         <p style={{ color: '#666', marginBottom: '2rem', fontSize: '0.95rem' }}>Bekijk je reflecties en pas je gegevens aan</p>
 
-        {/* Bewijs banner */}
-        {afgerond >= 4 && (
-          <div onClick={() => navigate('/bewijs')} style={{ background: groenDark, borderRadius: '12px', padding: '1.25rem 1.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', cursor: 'pointer' }}>
-            <span style={{ fontSize: '1.5rem' }}>🏆</span>
-            <div>
-              <p style={{ color: 'white', fontWeight: '600', margin: 0 }}>Bewijs van deelname</p>
-              <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.85rem', margin: '0.2rem 0 0' }}>Bekijk je bewijs en reflecties</p>
-            </div>
-            <span style={{ color: 'white', marginLeft: 'auto', fontSize: '1.25rem' }}>→</span>
-          </div>
-        )}
-
         {/* In-Check profiel */}
         {profielType && pk && (
           <div style={{ background: pk.bg, border: `1px solid ${pk.tekst}20`, borderRadius: '12px', padding: '1.25rem 1.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -114,17 +101,12 @@ function MijnProfiel() {
           </div>
         )}
 
-        {/* De vier doelgroepen — 1 kleur */}
+        {/* De vier doelgroepen */}
         <div style={{ background: 'white', borderRadius: '12px', padding: '1.25rem', marginBottom: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
           <div style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '0.07em', color: '#595959', textTransform: 'uppercase', marginBottom: '0.75rem' }}>De vier doelgroepen</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
             {Object.entries(doelgroepSymbolen).map(([letter, d]) => (
-              <div key={letter} style={{
-                display: 'flex', alignItems: 'center', gap: '6px',
-                padding: '5px 12px', borderRadius: '20px',
-                background: '#E0F5F4',
-                border: mijnLetter === letter ? `2px solid ${groenDark}` : '1.5px solid transparent',
-              }}>
+              <div key={letter} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '5px 12px', borderRadius: '20px', background: '#E0F5F4', border: mijnLetter === letter ? `2px solid ${groenDark}` : '1.5px solid transparent' }}>
                 <span style={{ fontSize: '1rem' }}>{d.icoon}</span>
                 <span style={{ fontSize: '12px', fontWeight: mijnLetter === letter ? '700' : '500', color: groenDark }}>
                   {letter} — {d.label}
@@ -212,7 +194,7 @@ function MijnProfiel() {
         <div style={{ background: 'white', borderRadius: '12px', padding: '1.75rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', border: '1px solid #fee2e2' }}>
           <h2 style={{ color: '#991b1b', marginTop: 0, marginBottom: '0.5rem', fontSize: '1.1rem' }}>Account verwijderen</h2>
           <p style={{ color: '#555', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '1.5rem' }}>
-            Je kunt je account en alle bijbehorende gegevens permanent verwijderen. Download eerst je bewijs van deelname als je dat wilt bewaren.
+            Je kunt je account en alle bijbehorende gegevens permanent verwijderen. Dit kan niet ongedaan worden gemaakt.
           </p>
           <button onClick={handleVerwijderAccount} style={{ padding: '0.75rem 1.5rem', background: 'white', color: '#991b1b', border: '1px solid #ef4444', borderRadius: '8px', fontSize: '0.9rem', fontWeight: '600', cursor: 'pointer', width: isMobiel ? '100%' : 'auto' }}>
             Account verwijderen
