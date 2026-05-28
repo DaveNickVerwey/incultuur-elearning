@@ -1,28 +1,21 @@
 import { useEffect, useState } from 'react'
 import { auth, db } from '../firebase'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import { useNavigate } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import logo from '../assets/logo.jpeg'
 import { modulesData } from '../modulesData'
 
-const blauw = '#012c75'
-const groen = '#027a82'
+const groen = '#00A99D'
+const groenDark = '#1A3080'
 
 function Bewijs() {
   const [user] = useAuthState(auth)
   const [profiel, setProfiel] = useState(null)
   const [voortgang, setVoortgang] = useState({})
-  const [stap, setStap] = useState('reflectie')
+  const [reflecties, setReflecties] = useState({})
   const [isMobiel, setIsMobiel] = useState(window.innerWidth < 768)
-  const [reflectie, setReflectie] = useState({
-    verwachtingVoldaan: 5,
-    kennisNiveauNu: 5,
-    kennisNiveauToelichting: '',
-    belangrijksteInzicht: '',
-    eersteActie: '',
-  })
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -40,160 +33,178 @@ function Bewijs() {
         const data = snap.data()
         setProfiel(data)
         setVoortgang(data.voortgang || {})
-        if (data.reflectie) {
-          setReflectie(data.reflectie)
-          setStap('bewijs')
-        }
+        const alleReflecties = {}
+        modulesData.forEach((m) => {
+          alleReflecties[m.nr] = {
+            reflecties: data[`reflecties_${m.nr}`] || null,
+            actie: data[`actie_${m.nr}`] || null,
+          }
+        })
+        setReflecties(alleReflecties)
       }
     }
     haal()
   }, [user])
 
-  const handleOpslaanReflectie = async () => {
-    const ref = doc(db, 'gebruikers', user.uid)
-    await setDoc(ref, { reflectie }, { merge: true })
-    setStap('bewijs')
-  }
+  if (!profiel) return <div style={{ padding: '2rem', fontFamily: 'system-ui' }}>Laden...</div>
 
-  const totaalInzichten = modulesData.reduce((acc, m) => acc + m.leerdoelen.length, 0)
   const datum = new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })
+  const afgerondModules = modulesData.filter((m) => voortgang[m.nr])
 
-  if (!profiel) return <div style={{ padding: '2rem' }}>Laden...</div>
+  const profielKleuren = {
+    Ontdekker:       { bg: '#E0F5F4', tekst: groenDark, icoon: '🌱' },
+    Kijker:          { bg: '#E8EFFE', tekst: groenDark, icoon: '👀' },
+    Drempelverlager: { bg: '#EFEDFC', tekst: groenDark, icoon: '🚪' },
+    Voorloper:       { bg: '#FDF0DC', tekst: '#7A4A05', icoon: '⭐' },
+  }
+  const pk = profielKleuren[profiel.profielType]
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', background: '#f5f5f5' }}>
-      <Sidebar actief="bewijs" voortgang={voortgang} />
+    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', background: '#f4f2ee' }}>
+      <Sidebar actief="bewijs" voortgang={voortgang} profiel={profiel} />
 
-      <main style={{ marginLeft: isMobiel ? 0 : '220px', padding: isMobiel ? '4rem 1.25rem 1.25rem' : '2.5rem', flex: 1, maxWidth: isMobiel ? '100%' : '760px' }}>
+      <main style={{ marginLeft: isMobiel ? 0 : '220px', padding: isMobiel ? '4rem 1.25rem 2rem' : '2.5rem', flex: 1, maxWidth: isMobiel ? '100%' : '800px' }}>
 
-        {stap === 'reflectie' && (
-          <div>
-            <h1 style={{ color: blauw, marginBottom: '0.5rem' }}>Reflectie</h1>
-            <p style={{ color: '#555', marginBottom: '2rem' }}>Je hebt alle 4 modules afgerond — gefeliciteerd! Voordat je je bewijs van deelname ontvangt, vragen we je om kort terug te kijken op het leertraject.</p>
+        <h1 style={{ color: '#1a1a1a', marginBottom: '0.4rem', fontSize: isMobiel ? '1.4rem' : '1.75rem' }}>Bewijs van deelname</h1>
+        <p style={{ color: '#666', marginBottom: '2rem', fontSize: '0.95rem' }}>Sla op als PDF via de printknop onderaan.</p>
 
-            <div style={{ background: 'white', borderRadius: '12px', padding: isMobiel ? '1.5rem' : '2rem', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', marginBottom: '1.5rem' }}>
+        {/* ── CERTIFICAAT ── */}
+        <div id="certificaat" style={{
+          background: 'white',
+          borderRadius: '16px',
+          padding: isMobiel ? '1.5rem' : '3rem',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.1)',
+          marginBottom: '1.5rem',
+          border: `3px solid ${groenDark}`,
+        }}>
 
-              {profiel.verwachting && (
-                <div style={{ background: '#f8f9ff', border: `1px solid ${blauw}20`, borderRadius: '8px', padding: '1.25rem', marginBottom: '2rem' }}>
-                  <p style={{ color: blauw, fontWeight: '600', margin: '0 0 0.5rem', fontSize: '0.85rem' }}>Jouw verwachting bij de start</p>
-                  <p style={{ color: '#444', margin: 0, fontStyle: 'italic' }}>"{profiel.verwachting}"</p>
-                </div>
-              )}
+          {/* Header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
+            <img src={logo} alt="InCultuur" style={{ height: isMobiel ? '36px' : '52px', objectFit: 'contain' }} />
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ margin: 0, fontSize: '0.78rem', color: '#888' }}>Datum van afronding</p>
+              <p style={{ margin: 0, fontWeight: '600', color: groenDark, fontSize: '0.9rem' }}>{datum}</p>
+            </div>
+          </div>
 
-              <div style={{ marginBottom: '2rem' }}>
-                <label style={{ fontWeight: '600', color: '#222', display: 'block', marginBottom: '0.4rem' }}>In welke mate heeft de e-learning aan jouw verwachting voldaan?</label>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                  <span style={{ fontSize: '0.8rem', color: '#555' }}>Helemaal niet</span>
-                  <span style={{ fontWeight: 'bold', color: blauw, fontSize: '1.2rem' }}>{reflectie.verwachtingVoldaan}/10</span>
-                  <span style={{ fontSize: '0.8rem', color: '#555' }}>Volledig</span>
-                </div>
-                <input type="range" min="1" max="10" value={reflectie.verwachtingVoldaan} onChange={(e) => setReflectie({ ...reflectie, verwachtingVoldaan: parseInt(e.target.value) })} style={{ width: '100%', accentColor: blauw }} />
-              </div>
+          {/* Naam blok */}
+          <div style={{ borderTop: `2px solid ${groen}`, borderBottom: `2px solid ${groen}`, padding: '1.5rem 0', margin: '0 0 2rem', textAlign: 'center' }}>
+            <p style={{ color: '#666', fontSize: '0.88rem', margin: '0 0 0.4rem' }}>Dit bewijs van deelname wordt verleend aan</p>
+            <h2 style={{ color: groenDark, fontSize: isMobiel ? '1.4rem' : '2rem', margin: '0 0 0.4rem', fontWeight: '700' }}>
+              {profiel.naam} {profiel.achternaam}
+            </h2>
+            <p style={{ color: '#555', margin: 0, fontSize: '0.95rem' }}>{profiel.functie} — {profiel.organisatie}</p>
+          </div>
 
-              {profiel.kennisniveau && (
-                <div style={{ marginBottom: '2rem' }}>
-                  <label style={{ fontWeight: '600', color: '#222', display: 'block', marginBottom: '0.4rem' }}>
-                    Bij de start gaf je jezelf een {profiel.kennisniveau}/10 voor kennisniveau. Welk cijfer zou je jezelf nu geven?
-                  </label>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                    <span style={{ fontSize: '0.8rem', color: '#555' }}>Beginner</span>
-                    <span style={{ fontWeight: 'bold', color: blauw, fontSize: '1.2rem' }}>{reflectie.kennisNiveauNu}/10</span>
-                    <span style={{ fontSize: '0.8rem', color: '#555' }}>Expert</span>
-                  </div>
-                  <input type="range" min="1" max="10" value={reflectie.kennisNiveauNu} onChange={(e) => setReflectie({ ...reflectie, kennisNiveauNu: parseInt(e.target.value) })} style={{ width: '100%', accentColor: blauw }} />
-                  <div style={{ marginTop: '1rem' }}>
-                    <label style={{ fontSize: '0.85rem', color: '#555', display: 'block', marginBottom: '0.4rem' }}>Toelichting — wat heeft dit veranderd?</label>
-                    <textarea value={reflectie.kennisNiveauToelichting} onChange={(e) => setReflectie({ ...reflectie, kennisNiveauToelichting: e.target.value })} rows={2} placeholder="Bijv: Ik besefte dat ik veel meer wist dan ik dacht..." style={{ width: '100%', padding: '0.65rem', border: '1px solid #ddd', borderRadius: '8px', fontSize: '0.95rem', boxSizing: 'border-box', resize: 'vertical' }} />
-                  </div>
-                </div>
-              )}
+          {/* Intro tekst */}
+          <p style={{ textAlign: 'center', color: '#444', lineHeight: '1.75', marginBottom: '2rem', fontSize: '0.95rem' }}>
+            heeft de <strong>InCultuur Boost</strong> succesvol afgerond — een praktische e-learning over
+            toegankelijkheid en inclusie in de cultuursector, ontwikkeld door InCultuur Den Haag.
+          </p>
 
-              <div style={{ marginBottom: '2rem' }}>
-                <label style={{ fontWeight: '600', color: '#222', display: 'block', marginBottom: '0.4rem' }}>Wat is het belangrijkste inzicht dat je meeneemt?</label>
-                <textarea value={reflectie.belangrijksteInzicht} onChange={(e) => setReflectie({ ...reflectie, belangrijksteInzicht: e.target.value })} rows={3} placeholder="Beschrijf in je eigen woorden het inzicht dat het meeste indruk heeft gemaakt..." style={{ width: '100%', padding: '0.65rem', border: '1px solid #ddd', borderRadius: '8px', fontSize: '0.95rem', boxSizing: 'border-box', resize: 'vertical' }} />
-              </div>
-
+          {/* In-Check profiel */}
+          {profiel.profielType && pk && (
+            <div style={{ background: pk.bg, borderRadius: '10px', padding: '1rem 1.25rem', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <span style={{ fontSize: '1.5rem' }}>{pk.icoon}</span>
               <div>
-                <label style={{ fontWeight: '600', color: '#222', display: 'block', marginBottom: '0.4rem' }}>Wat is de eerste concrete actie die je gaat ondernemen?</label>
-                <textarea value={reflectie.eersteActie} onChange={(e) => setReflectie({ ...reflectie, eersteActie: e.target.value })} rows={3} placeholder="Bijv: Ik ga volgende week met een ervaringsdeskundige praten over onze ingang..." style={{ width: '100%', padding: '0.65rem', border: '1px solid #ddd', borderRadius: '8px', fontSize: '0.95rem', boxSizing: 'border-box', resize: 'vertical' }} />
+                <div style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '0.07em', color: pk.tekst, textTransform: 'uppercase', marginBottom: '2px' }}>In-Check profiel bij aanvang</div>
+                <div style={{ fontWeight: '600', color: pk.tekst }}>{profiel.profielType}</div>
               </div>
             </div>
+          )}
 
-            <button onClick={handleOpslaanReflectie} style={{ padding: '0.85rem 2rem', background: blauw, color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', width: isMobiel ? '100%' : 'auto' }}>
-              Bewijs van deelname ophalen →
-            </button>
+          {/* Afgeronde modules + reflecties */}
+          <div style={{ marginBottom: '2rem' }}>
+            <p style={{ fontWeight: '700', color: groenDark, marginBottom: '1rem', fontSize: '0.82rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              Afgeronde modules & reflecties
+            </p>
+
+            {afgerondModules.map((module) => {
+              const mod = reflecties[module.nr]
+              return (
+                <div key={module.nr} style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid #eee' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.75rem' }}>
+                    <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: groen, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.72rem', fontWeight: '700', flexShrink: 0 }}>
+                      {module.nr}
+                    </div>
+                    <h3 style={{ margin: 0, color: groenDark, fontSize: '0.95rem', fontWeight: '700' }}>{module.titel}</h3>
+                  </div>
+
+                  {mod?.reflecties && (
+                    <div style={{ marginLeft: '2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                      {module.reflectieVragen.map((vraag) => {
+                        const antwoord = mod.reflecties[vraag.id]
+                        if (!antwoord) return null
+                        return (
+                          <div key={vraag.id} style={{ background: '#f0fafa', borderRadius: '6px', padding: '0.6rem 0.875rem', borderLeft: `3px solid ${groen}` }}>
+                            <p style={{ margin: '0 0 0.2rem', fontSize: '0.75rem', fontWeight: '600', color: groenDark }}>{vraag.vraag}</p>
+                            <p style={{ margin: 0, fontSize: '0.82rem', color: '#444', lineHeight: '1.55', fontStyle: 'italic' }}>"{antwoord}"</p>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+
+                  {mod?.actie && (
+                    <div style={{ marginLeft: '2rem', background: '#EFEDFC', borderRadius: '6px', padding: '0.6rem 0.875rem', borderLeft: '3px solid #6B5ECC' }}>
+                      <p style={{ margin: '0 0 0.2rem', fontSize: '0.75rem', fontWeight: '600', color: '#3D3280' }}>Actie-opdracht</p>
+                      <p style={{ margin: 0, fontSize: '0.82rem', color: '#444', lineHeight: '1.55', fontStyle: 'italic' }}>
+                        "{module.actieOpdracht.prefix} {mod.actie}"
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
-        )}
 
-        {stap === 'bewijs' && (
-          <div>
-            <h1 style={{ color: blauw, marginBottom: '0.5rem' }}>Bewijs van deelname</h1>
-            <p style={{ color: '#555', marginBottom: '2rem' }}>Gefeliciteerd met het afronden van de InCultuur e-learning!</p>
-
-            <div id="certificaat" style={{ background: 'white', borderRadius: '16px', padding: isMobiel ? '1.5rem' : '3rem', boxShadow: '0 4px 24px rgba(0,0,0,0.1)', marginBottom: '1.5rem', border: `3px solid ${blauw}` }}>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
-                <img src={logo} alt="InCultuur" style={{ height: isMobiel ? '40px' : '60px' }} />
-                <div style={{ textAlign: 'right' }}>
-                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#555' }}>Datum van afronding</p>
-                  <p style={{ margin: 0, fontWeight: '600', color: blauw, fontSize: isMobiel ? '0.85rem' : '1rem' }}>{datum}</p>
-                </div>
-              </div>
-
-              <div style={{ borderTop: `2px solid ${groen}`, borderBottom: `2px solid ${groen}`, padding: '1.5rem 0', margin: '1.5rem 0', textAlign: 'center' }}>
-                <p style={{ color: '#555', fontSize: '0.9rem', margin: '0 0 0.5rem' }}>Dit certificaat wordt verleend aan</p>
-                <h2 style={{ color: blauw, fontSize: isMobiel ? '1.4rem' : '2rem', margin: '0 0 0.5rem' }}>{profiel.naam} {profiel.achternaam}</h2>
-                <p style={{ color: '#555', margin: 0, fontSize: isMobiel ? '0.85rem' : '1rem' }}>{profiel.functie} — {profiel.organisatie}</p>
-              </div>
-
-              <p style={{ textAlign: 'center', color: '#444', lineHeight: '1.7', marginBottom: '2rem', fontSize: isMobiel ? '0.9rem' : '1rem' }}>
-                heeft de InCultuur e-learning <strong>Toegankelijkheid in de cultuursector</strong> succesvol afgerond en daarmee <strong>{totaalInzichten} inzichten</strong> opgedaan over fysieke, digitale en sociale toegankelijkheid.
-              </p>
-
-              <div style={{ marginBottom: '2rem' }}>
-                <p style={{ fontWeight: '600', color: blauw, marginBottom: '1rem', fontSize: '0.9rem', letterSpacing: '0.05em' }}>OPGEDANE INZICHTEN</p>
-                <div style={{ display: 'grid', gridTemplateColumns: isMobiel ? '1fr' : '1fr 1fr', gap: '0.5rem' }}>
-                  {modulesData.map((module) => (
-                    module.leerdoelen.map((doel, i) => (
-                      <div key={`${module.nr}-${i}`} style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start', fontSize: '0.82rem' }}>
-                        <span style={{ color: groen, flexShrink: 0, fontWeight: 'bold' }}>✓</span>
-                        <span style={{ color: '#444' }}>{doel}</span>
-                      </div>
-                    ))
-                  ))}
-                </div>
-              </div>
-
-              {reflectie.eersteActie && (
-                <div style={{ background: '#f8f9ff', borderRadius: '8px', padding: '1.25rem', border: `1px solid ${blauw}20` }}>
-                  <p style={{ fontWeight: '600', color: blauw, margin: '0 0 0.4rem', fontSize: '0.85rem' }}>Eerste concrete actie</p>
-                  <p style={{ color: '#444', margin: 0, fontStyle: 'italic', fontSize: '0.9rem' }}>"{reflectie.eersteActie}"</p>
-                </div>
-              )}
-
-              <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-                <div>
-                  <p style={{ margin: 0, fontWeight: '600', color: blauw, fontSize: '0.9rem' }}>InCultuur</p>
-                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#555' }}>info@incultuur.nl</p>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#555' }}>Dit bewijs is digitaal gegenereerd</p>
-                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#555' }}>{user?.email}</p>
-                </div>
-              </div>
+          {/* Footer certificaat */}
+          <div style={{ paddingTop: '1.25rem', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div>
+              <p style={{ margin: 0, fontWeight: '700', color: groenDark, fontSize: '0.9rem' }}>InCultuur Den Haag</p>
+              <p style={{ margin: 0, fontSize: '0.78rem', color: '#666' }}>contact@incultuur.nl</p>
             </div>
-
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <button onClick={() => window.print()} style={{ padding: '0.85rem 2rem', background: blauw, color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', flex: isMobiel ? 1 : 'none' }}>
-                Afdrukken / Opslaan als PDF
-              </button>
-              <button onClick={() => setStap('reflectie')} style={{ padding: '0.85rem 2rem', background: 'white', color: blauw, border: `1px solid ${blauw}`, borderRadius: '8px', fontSize: '1rem', fontWeight: '600', cursor: 'pointer', flex: isMobiel ? 1 : 'none' }}>
-                Reflectie bekijken
-              </button>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ margin: 0, fontSize: '0.72rem', color: '#888' }}>Digitaal bewijs van deelname</p>
+              <p style={{ margin: 0, fontSize: '0.72rem', color: '#888' }}>{user?.email}</p>
             </div>
           </div>
-        )}
+        </div>
+
+        {/* Knoppen */}
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => window.print()}
+            style={{ padding: '0.85rem 2rem', background: groenDark, color: 'white', border: 'none', borderRadius: '8px', fontSize: '0.95rem', fontWeight: '600', cursor: 'pointer', flex: isMobiel ? 1 : 'none' }}
+          >
+            🖨 Afdrukken / Opslaan als PDF
+          </button>
+          <button
+            onClick={() => navigate('/dashboard')}
+            style={{ padding: '0.85rem 2rem', background: 'white', color: groenDark, border: `1.5px solid ${groenDark}`, borderRadius: '8px', fontSize: '0.95rem', fontWeight: '600', cursor: 'pointer', flex: isMobiel ? 1 : 'none' }}
+          >
+            ← Terug naar dashboard
+          </button>
+        </div>
+
       </main>
+
+      {/* Print styles */}
+      <style>{`
+        @media print {
+          body * { visibility: hidden; }
+          #certificaat, #certificaat * { visibility: visible; }
+          #certificaat {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            padding: 2rem !important;
+            box-shadow: none !important;
+            border: 3px solid ${groenDark} !important;
+            border-radius: 0 !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }
