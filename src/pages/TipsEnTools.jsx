@@ -276,7 +276,7 @@ function TipsEnTools() {
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
               {Object.entries(doelgroepSymbolen).map(([letter, d]) => (
-                <div key={letter} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '5px 12px', borderRadius: '20px', background: d.kleur, border: mijnLetter === letter ? `2px solid ${groenDark}` : '1.5px solid transparent' }}>
+                <div key={letter} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '5px 12px', borderRadius: '20px', background: '#E0F5F4', border: mijnLetter === letter ? `2px solid ${groenDark}` : '1.5px solid transparent' }}>
                   <span style={{ fontSize: '1rem' }}>{d.icoon}</span>
                   <span style={{ fontSize: '12px', fontWeight: '600', color: groenDark }}>{letter} — {d.label}</span>
                   {mijnLetter === letter && <span style={{ fontSize: '10px', background: groenDark, color: 'white', padding: '1px 6px', borderRadius: '10px', fontWeight: '700' }}>jij</span>}
