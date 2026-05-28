@@ -22,11 +22,20 @@ const profielKleuren = {
   Voorloper:       { bg: '#FDF0DC', tekst: '#7A4A05', icoon: '⭐' },
 }
 
+const feedbackVragen = [
+  { id: 'beleving', vraag: 'Wat vond je van de module die je zojuist afgerond hebt?' },
+  { id: 'leerervaring', vraag: 'Heb je het gevoel dat je iets geleerd hebt?' },
+  { id: 'tips', vraag: 'Heb je nog tips of aanpassingen voor de Boost? Laat het weten!' },
+]
+
 function Dashboard() {
   const [user] = useAuthState(auth)
   const [voortgang, setVoortgang] = useState({})
   const [profiel, setProfiel] = useState(null)
   const [isMobiel, setIsMobiel] = useState(window.innerWidth < 768)
+  const [toonFeedback, setToonFeedback] = useState(false)
+  const [feedback, setFeedback] = useState({ beleving: '', leerervaring: '', tips: '' })
+  const [feedbackVerstuurd, setFeedbackVerstuurd] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -69,9 +78,15 @@ function Dashboard() {
   const profielKleur = profielKleuren[profielType]
 
   const handleUnlockAlles = async () => {
+    // Sla feedback op + unlock alle modules
     const ref = doc(db, 'gebruikers', user.uid)
-    await setDoc(ref, { allUnlocked: true }, { merge: true })
+    await setDoc(ref, {
+      allUnlocked: true,
+      moduleFeedback: feedback,
+    }, { merge: true })
     setProfiel({ ...profiel, allUnlocked: true })
+    setToonFeedback(false)
+    setFeedbackVerstuurd(true)
   }
 
   return (
@@ -122,7 +137,7 @@ function Dashboard() {
         <div style={{ background: 'white', borderRadius: '12px', padding: '1rem 1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', marginBottom: '1.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' }}>
             <span style={{ fontSize: '0.88rem', color: '#333', fontWeight: '500' }}>Voortgang</span>
-            <span style={{ fontWeight: '700', color: '#1A3080', fontSize: '0.95rem' }}>{percentage}%</span>
+            <span style={{ fontWeight: '700', color: groenDark, fontSize: '0.95rem' }}>{percentage}%</span>
           </div>
           <div style={{ height: '6px', background: '#ddd', borderRadius: '4px', overflow: 'hidden' }}>
             <div style={{ height: '100%', background: groen, borderRadius: '4px', width: `${percentage}%`, transition: 'width 0.4s' }} />
@@ -132,10 +147,10 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Aanmoediging na eerste module — alleen tonen als nog niet alle modules unlocked */}
-        {afgerond >= 1 && !allUnlocked && (
+        {/* Aanmoediging na eerste module */}
+        {afgerond >= 1 && !allUnlocked && !toonFeedback && (
           <div style={{
-            background: '#1A3080',
+            background: groenDark,
             borderRadius: '12px',
             padding: '1.25rem 1.5rem',
             marginBottom: '1.5rem',
@@ -152,11 +167,11 @@ function Dashboard() {
                 Toegankelijkheid is breder dan jouw rol alleen. Ontdek nu ook hoe je collega's het aanpakken — en hoe alle puzzelstukjes samenkomen.
               </p>
               <button
-                onClick={handleUnlockAlles}
+                onClick={() => setToonFeedback(true)}
                 style={{
                   padding: '0.6rem 1.25rem',
                   background: 'white',
-                  color: '#1A3080',
+                  color: groenDark,
                   border: 'none',
                   borderRadius: '8px',
                   fontSize: '0.88rem',
@@ -167,6 +182,79 @@ function Dashboard() {
                 Ontgrendel alle modules →
               </button>
             </div>
+          </div>
+        )}
+
+        {/* Feedback scherm */}
+        {toonFeedback && (
+          <div style={{
+            background: 'white',
+            borderRadius: '12px',
+            padding: '1.75rem',
+            marginBottom: '1.5rem',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.07)',
+            borderLeft: `4px solid ${groen}`,
+          }}>
+            <h2 style={{ color: '#1a1a1a', marginTop: 0, marginBottom: '0.4rem', fontSize: '1.1rem' }}>
+              Voordat je verdergaat... 💬
+            </h2>
+            <p style={{ color: '#666', fontSize: '0.88rem', marginBottom: '1.5rem', lineHeight: '1.6' }}>
+              We zijn benieuwd naar jouw ervaring. Je antwoorden helpen ons de InCultuur Boost te verbeteren.
+            </p>
+
+            {feedbackVragen.map((vraag, i) => (
+              <div key={vraag.id} style={{ marginBottom: '1.25rem' }}>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '600', color: '#1a1a1a', marginBottom: '0.5rem' }}>
+                  {i + 1}. {vraag.vraag}
+                </label>
+                <textarea
+                  value={feedback[vraag.id]}
+                  onChange={(e) => setFeedback({ ...feedback, [vraag.id]: e.target.value })}
+                  rows={3}
+                  placeholder="Jouw antwoord..."
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1.5px solid #e0e0e0',
+                    borderRadius: '8px',
+                    fontSize: '0.92rem',
+                    fontFamily: 'system-ui, sans-serif',
+                    resize: 'vertical',
+                    lineHeight: '1.6',
+                    color: '#333',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = groen}
+                  onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
+                />
+              </div>
+            ))}
+
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => setToonFeedback(false)}
+                style={{ padding: '0.8rem 1.5rem', background: 'white', color: '#333', border: '1.5px solid #ddd', borderRadius: '8px', fontSize: '0.9rem', fontWeight: '600', cursor: 'pointer' }}
+              >
+                ← Terug
+              </button>
+              <button
+                onClick={handleUnlockAlles}
+                style={{ padding: '0.8rem 1.5rem', background: groen, color: 'white', border: 'none', borderRadius: '8px', fontSize: '0.9rem', fontWeight: '700', cursor: 'pointer' }}
+              >
+                Verstuur & ontgrendel alle modules →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Bevestiging na feedback */}
+        {feedbackVerstuurd && (
+          <div style={{ background: '#E0F5F4', borderRadius: '12px', padding: '1rem 1.25rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <span style={{ fontSize: '1.25rem' }}>✅</span>
+            <p style={{ margin: 0, color: groenDark, fontWeight: '600', fontSize: '0.9rem' }}>
+              Bedankt voor je feedback! Alle modules zijn nu beschikbaar.
+            </p>
           </div>
         )}
 
@@ -198,7 +286,6 @@ function Dashboard() {
                 onMouseEnter={(e) => { if (unlocked) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.12)' }}}
                 onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)' }}
               >
-                {/* Foto */}
                 <div style={{ height: '160px', position: 'relative', overflow: 'hidden' }}>
                   <img
                     src={fotoMap[module.nr]}
@@ -208,10 +295,10 @@ function Dashboard() {
                   <div style={{
                     position: 'absolute', inset: 0,
                     background: afgerondStatus
-  ? 'rgba(26,48,128,0.6)'
-  : !unlocked
-  ? 'rgba(0,0,0,0.5)'
-  : 'rgba(26,48,128,0.25)',
+                      ? 'rgba(26,48,128,0.6)'
+                      : !unlocked
+                      ? 'rgba(0,0,0,0.5)'
+                      : 'rgba(26,48,128,0.25)',
                   }} />
 
                   <div style={{ position: 'absolute', top: '0.75rem', right: '0.75rem' }}>
@@ -219,7 +306,7 @@ function Dashboard() {
                       <span style={{ background: groen, color: 'white', padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '600' }}>✓ Voltooid</span>
                     )}
                     {isFirst && (
-                      <span style={{ background: 'white', color: '#1A3080', padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '700' }}>Jouw module</span>
+                      <span style={{ background: 'white', color: groenDark, padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '700' }}>Jouw module</span>
                     )}
                     {isAndere && (
                       <span style={{ background: 'rgba(255,255,255,0.9)', color: '#333', padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '600' }}>Ook interessant</span>
@@ -234,7 +321,6 @@ function Dashboard() {
                   </div>
                 </div>
 
-                {/* Body */}
                 <div style={{ padding: '1.1rem 1.25rem 1.25rem' }}>
                   <h2 style={{ margin: '0 0 0.25rem', color: '#1a1a1a', fontSize: '1rem', fontWeight: '700' }}>
                     {module.titel}

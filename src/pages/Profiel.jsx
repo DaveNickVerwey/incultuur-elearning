@@ -21,6 +21,16 @@ const rolNaarModule = {
 function Profiel() {
   const [user] = useAuthState(auth)
   const [stap, setStap] = useState(1)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (user === null) navigate('/login')
+  }, [user])
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (user === null) navigate('/login')
+  }, [user])
   const [form, setForm] = useState({ naam: '', achternaam: '', organisatie: '', functie: '', rol: '' })
   const [laden, setLaden] = useState(false)
   const isMobiel = window.innerWidth < 768
