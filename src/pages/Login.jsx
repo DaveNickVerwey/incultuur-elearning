@@ -1,5 +1,5 @@
 import theaterFoto from '../assets/theater.jpg'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth, db } from '../firebase'
 import { doc, getDoc } from 'firebase/firestore'
@@ -13,8 +13,14 @@ function Login() {
   const [email, setEmail] = useState('')
   const [wachtwoord, setWachtwoord] = useState('')
   const [fout, setFout] = useState('')
-  const isMobiel = window.innerWidth < 768
+  const [isMobiel, setIsMobiel] = useState(window.innerWidth < 768)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const check = () => setIsMobiel(window.innerWidth < 768)
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -22,11 +28,8 @@ function Login() {
     try {
       const result = await signInWithEmailAndPassword(auth, email, wachtwoord)
       const uid = result.user.uid
-
-      // Check waar gebruiker naartoe moet
       const ref = doc(db, 'gebruikers', uid)
       const snap = await getDoc(ref)
-
       if (!snap.exists() || !snap.data().naam) {
         navigate('/profiel')
       } else if (!snap.data().welkomGezien) {
@@ -42,14 +45,14 @@ function Login() {
   if (isMobiel) {
     return (
       <div style={{ minHeight: '100vh', fontFamily: 'system-ui, sans-serif', background: groenDark, position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${theaterFoto})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.2 }} />
+        <div style={{ position: 'fixed', inset: 0, backgroundImage: `url(${theaterFoto})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.2 }} />
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
           <div style={{ padding: '3rem 1.5rem 2rem' }}>
             <img src={logo} alt="InCultuur logo" style={{ width: '80px', marginBottom: '1.5rem' }} />
             <p style={{ color: 'white', fontSize: '1.4rem', fontStyle: 'italic', fontWeight: '300', lineHeight: '1.4', marginBottom: '0.75rem' }}>
               "Cultuur is voor iedereen.<br />Leer hoe je dat waarmaakt."
             </p>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem' }}>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', lineHeight: '1.6' }}>
               Een praktische e-learning over toegankelijkheid voor cultuurprofessionals.
             </p>
             <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', flexWrap: 'wrap' }}>
@@ -58,20 +61,20 @@ function Login() {
               ))}
             </div>
           </div>
-          <div style={{ background: 'white', borderRadius: '24px 24px 0 0', padding: '2rem 1.5rem', flex: 1, marginTop: 'auto' }}>
+          <div style={{ background: 'white', borderRadius: '24px 24px 0 0', padding: '2rem 1.5rem', flex: 1 }}>
             <h1 style={{ color: groenDark, fontSize: '1.5rem', margin: '0 0 0.5rem' }}>Inloggen</h1>
-            <p style={{ color: '#555', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+            <p style={{ color: '#555', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: '1.6' }}>
               Je ontving je inloggegevens via e-mail. Vul ze hieronder in om te beginnen.
             </p>
             <form onSubmit={handleLogin}>
               <div style={{ marginBottom: '1rem' }}>
-                <label htmlFor="email" style={{ fontSize: '0.85rem', color: '#555', display: 'block', marginBottom: '0.4rem' }}>E-mailadres</label>
-                <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
+                <label htmlFor="email-mob" style={{ fontSize: '0.85rem', color: '#555', display: 'block', marginBottom: '0.4rem' }}>E-mailadres</label>
+                <input id="email-mob" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
                   style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #ddd', borderRadius: '8px', fontSize: '0.95rem', boxSizing: 'border-box', outline: 'none' }} />
               </div>
               <div style={{ marginBottom: '1.5rem' }}>
-                <label htmlFor="wachtwoord" style={{ fontSize: '0.85rem', color: '#555', display: 'block', marginBottom: '0.4rem' }}>Wachtwoord</label>
-                <input id="wachtwoord" type="password" value={wachtwoord} onChange={(e) => setWachtwoord(e.target.value)} required
+                <label htmlFor="wachtwoord-mob" style={{ fontSize: '0.85rem', color: '#555', display: 'block', marginBottom: '0.4rem' }}>Wachtwoord</label>
+                <input id="wachtwoord-mob" type="password" value={wachtwoord} onChange={(e) => setWachtwoord(e.target.value)} required
                   style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #ddd', borderRadius: '8px', fontSize: '0.95rem', boxSizing: 'border-box', outline: 'none' }} />
               </div>
               {fout && <p style={{ color: '#c0392b', fontSize: '0.85rem', marginBottom: '1rem' }}>{fout}</p>}
