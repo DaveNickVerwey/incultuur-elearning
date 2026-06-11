@@ -6,11 +6,16 @@ import { useNavigate } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import { modulesData } from '../modulesData'
 import { IconCultuur, IconBereik, IconSamenwerking, IconMogelijkheden } from '../components/doelgroepIconen'
+import module1Foto from '../assets/module1.jpg'
+import module2Foto from '../assets/module2.jpg'
+import module3Foto from '../assets/module3.jpg'
+import module4Foto from '../assets/module4.jpg'
 
 const groen = '#00A99D'
 const groenDark = '#1A3080'
 
 const moduleIconen = { 1: IconCultuur, 2: IconBereik, 3: IconSamenwerking, 4: IconMogelijkheden }
+const fotoMap = { 1: module1Foto, 2: module2Foto, 3: module3Foto, 4: module4Foto }
 
 const profielKleuren = {
   Ontdekker:       { bg: '#E0F5F4', tekst: groenDark, icoon: '🌱' },
@@ -91,7 +96,6 @@ function Dashboard() {
           </p>
         </div>
 
-        {/* InCheck profiel */}
         {profielType && profielKleur && (
           <div style={{ background: profielKleur.bg, border: `1px solid ${profielKleur.tekst}25`, borderRadius: '12px', padding: '1rem 1.25rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <span style={{ fontSize: '1.5rem' }}>{profielKleur.icoon}</span>
@@ -102,7 +106,6 @@ function Dashboard() {
           </div>
         )}
 
-        {/* Voortgang */}
         <div style={{ background: 'white', borderRadius: '12px', padding: '1rem 1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', marginBottom: '1.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' }}>
             <span style={{ fontSize: '0.88rem', color: '#333', fontWeight: '500' }}>Voortgang</span>
@@ -114,7 +117,6 @@ function Dashboard() {
           <div style={{ marginTop: '6px', fontSize: '0.82rem', color: '#555' }}>{afgerond} van 4 modules voltooid</div>
         </div>
 
-        {/* Aanmoediging */}
         {afgerond >= 1 && !allUnlocked && !toonFeedback && (
           <div style={{ background: groenDark, borderRadius: '12px', padding: '1.25rem 1.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
             <span style={{ fontSize: '1.5rem', flexShrink: 0 }}>🎉</span>
@@ -130,7 +132,6 @@ function Dashboard() {
           </div>
         )}
 
-        {/* Feedback */}
         {toonFeedback && (
           <div style={{ background: 'white', borderRadius: '12px', padding: '1.75rem', marginBottom: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', borderLeft: `4px solid ${groen}` }}>
             <h2 style={{ color: '#1a1a1a', marginTop: 0, marginBottom: '0.4rem', fontSize: '1.1rem' }}>Voordat je verdergaat... 💬</h2>
@@ -173,29 +174,45 @@ function Dashboard() {
                 onMouseEnter={(e) => { if (unlocked) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.12)' }}}
                 onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)' }}
               >
-                {/* Header met icoon */}
-                <div style={{ height: '140px', background: afgerondStatus ? groen : unlocked ? groenDark : '#888', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', color: 'white' }}>
-                  <Icoon size={64} stroke={1.4} />
+                {/* Foto met overlay */}
+                <div style={{ height: '160px', position: 'relative', overflow: 'hidden' }}>
+                  <img
+                    src={fotoMap[module.nr]}
+                    alt={module.titel}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', filter: !unlocked ? 'grayscale(80%)' : 'none' }}
+                  />
+                  <div style={{
+                    position: 'absolute', inset: 0,
+                    background: afgerondStatus ? 'rgba(26,48,128,0.6)' : !unlocked ? 'rgba(0,0,0,0.5)' : 'rgba(26,48,128,0.25)',
+                  }} />
 
                   <div style={{ position: 'absolute', top: '0.75rem', right: '0.75rem' }}>
-                    {afgerondStatus && <span style={{ background: 'white', color: groen, padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.72rem', fontWeight: '700' }}>✓ Voltooid</span>}
+                    {afgerondStatus && <span style={{ background: groen, color: 'white', padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.72rem', fontWeight: '700' }}>✓ Voltooid</span>}
                     {isFirst && <span style={{ background: 'white', color: groenDark, padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.72rem', fontWeight: '700' }}>Jouw module</span>}
                     {isAndere && <span style={{ background: 'rgba(255,255,255,0.9)', color: '#333', padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.72rem', fontWeight: '600' }}>Ook interessant</span>}
                     {!unlocked && <span style={{ background: 'rgba(0,0,0,0.55)', color: 'white', padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.72rem' }}>🔒 Vergrendeld</span>}
                   </div>
-                  <div style={{ position: 'absolute', bottom: '0.6rem', left: '0.75rem', color: 'rgba(255,255,255,0.85)', fontSize: '0.72rem', fontWeight: '600', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+
+                  <div style={{ position: 'absolute', bottom: '0.75rem', left: '0.75rem', background: 'rgba(0,0,0,0.45)', color: 'white', padding: '0.2rem 0.6rem', borderRadius: '6px', fontSize: '0.72rem', fontWeight: '600' }}>
                     Module {module.nr}
                   </div>
                 </div>
 
-                <div style={{ padding: '1.1rem 1.25rem 1.25rem' }}>
-                  <h2 style={{ margin: '0 0 0.25rem', color: '#1a1a1a', fontSize: '1rem', fontWeight: '700' }}>{module.titel}</h2>
-                  <p style={{ margin: '0 0 0.6rem', color: '#333', fontSize: '0.82rem' }}>{module.subtitel}</p>
-                  <div style={{ display: 'inline-block', fontSize: '0.7rem', fontWeight: '600', padding: '2px 8px', borderRadius: '20px', background: '#E0F5F4', color: groenDark, marginBottom: '0.75rem' }}>
-                    {module.doelgroep}
+                {/* Body met groot icoon links */}
+                <div style={{ padding: '1.25rem', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                  {/* Groot icoon */}
+                  <div style={{ width: '56px', height: '56px', borderRadius: '12px', background: '#E0F5F4', display: 'flex', alignItems: 'center', justifyContent: 'center', color: groenDark, flexShrink: 0 }}>
+                    <Icoon size={32} stroke={1.6} />
                   </div>
-                  <div style={{ height: '3px', background: '#ddd', borderRadius: '2px', overflow: 'hidden' }}>
-                    <div style={{ height: '100%', background: groen, width: afgerondStatus ? '100%' : '0%', borderRadius: '2px', transition: 'width 0.3s' }} />
+
+                  {/* Tekst */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h2 style={{ margin: '0 0 0.2rem', color: '#1a1a1a', fontSize: '1.05rem', fontWeight: '700', lineHeight: '1.25' }}>{module.titel}</h2>
+                    <p style={{ margin: '0 0 0.4rem', color: '#444', fontSize: '0.85rem', fontStyle: 'italic', lineHeight: '1.4' }}>{module.subtitel}</p>
+                    <p style={{ margin: '0 0 0.6rem', color: '#666', fontSize: '0.78rem', lineHeight: '1.5' }}>{module.doelgroep}</p>
+                    <div style={{ height: '3px', background: '#ddd', borderRadius: '2px', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', background: groen, width: afgerondStatus ? '100%' : '0%', borderRadius: '2px', transition: 'width 0.3s' }} />
+                    </div>
                   </div>
                 </div>
               </div>

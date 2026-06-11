@@ -6,11 +6,16 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import { modulesData } from '../modulesData'
 import { IconCultuur, IconBereik, IconSamenwerking, IconMogelijkheden } from '../components/doelgroepIconen'
+import module1Foto from '../assets/module1.jpg'
+import module2Foto from '../assets/module2.jpg'
+import module3Foto from '../assets/module3.jpg'
+import module4Foto from '../assets/module4.jpg'
 
 const groen = '#00A99D'
 const groenDark = '#1A3080'
 
 const moduleIconen = { 1: IconCultuur, 2: IconBereik, 3: IconSamenwerking, 4: IconMogelijkheden }
+const fotoMap = { 1: module1Foto, 2: module2Foto, 3: module3Foto, 4: module4Foto }
 
 function Module() {
   const { nr } = useParams()
@@ -64,7 +69,6 @@ function Module() {
     if (!actieIngevuld) return
     const nieuweVoortgang = { ...voortgang, [module.nr]: true }
     const ref = doc(db, 'gebruikers', user.uid)
-    const alleAfgerond = Object.keys(nieuweVoortgang).length === 4
     await setDoc(ref, { voortgang: nieuweVoortgang, [`reflecties_${nr}`]: reflecties, [`actie_${nr}`]: actie }, { merge: true })
     setVoortgang(nieuweVoortgang)
     setOpgeslagen(true)
@@ -104,26 +108,22 @@ function Module() {
 
       <main style={{ marginLeft: isMobiel ? 0 : '220px', flex: 1, overflowX: 'hidden' }}>
 
-        {/* Hero met icoon */}
-        <div style={{ background: groenDark, padding: isMobiel ? '4rem 1.5rem 2rem' : '3rem 2.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-            {ModuleIcoon && (
-              <div style={{ width: '56px', height: '56px', borderRadius: '12px', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', flexShrink: 0 }}>
-                <ModuleIcoon size={32} stroke={1.6} />
-              </div>
-            )}
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ color: 'rgba(255,255,255,0.7)', fontWeight: '600', fontSize: '0.78rem', marginBottom: '0.3rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                Module {module.nr} · {module.duur}
-              </p>
-              <h1 style={{ color: 'white', fontSize: isMobiel ? '1.35rem' : '1.75rem', margin: 0, fontWeight: '700', lineHeight: '1.2' }}>
-                {module.titel}
-              </h1>
+        {/* Hero met foto en overlay */}
+        <div style={{ background: groenDark, padding: isMobiel ? '4rem 1.5rem 2rem' : '3rem 2.5rem', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${fotoMap[module.nr]})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.25 }} />
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontWeight: '600', fontSize: '0.8rem', marginBottom: '0.5rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              Module {module.nr} · {module.duur}
+            </p>
+            <h1 style={{ color: 'white', fontSize: isMobiel ? '1.4rem' : '1.9rem', margin: '0 0 0.5rem', fontWeight: '700' }}>
+              {module.titel}
+            </h1>
+            <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.95rem', margin: '0 0 0.5rem', fontStyle: 'italic' }}>
+              {module.subtitel}
+            </p>
+            <div style={{ display: 'inline-block', background: 'rgba(255,255,255,0.15)', padding: '3px 10px', borderRadius: '20px', fontSize: '0.75rem', color: 'rgba(255,255,255,0.85)' }}>
+              {module.doelgroep}
             </div>
-          </div>
-          <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.95rem', margin: '0 0 0.5rem', fontStyle: 'italic' }}>{module.subtitel}</p>
-          <div style={{ display: 'inline-block', background: 'rgba(255,255,255,0.15)', padding: '3px 10px', borderRadius: '20px', fontSize: '0.75rem', color: 'rgba(255,255,255,0.85)' }}>
-            {module.doelgroep}
           </div>
         </div>
 
@@ -146,9 +146,23 @@ function Module() {
 
         <div style={{ padding: isMobiel ? '1.5rem 1.1rem' : '2.5rem', maxWidth: '760px' }}>
 
-          {/* STAP 1: INTRO */}
+          {/* STAP 1: INTRO — met groot icoon */}
           {stap === 'intro' && (
             <div>
+              {/* Groot icoon + titel */}
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+                {ModuleIcoon && (
+                  <div style={{ width: '72px', height: '72px', borderRadius: '14px', background: '#E0F5F4', display: 'flex', alignItems: 'center', justifyContent: 'center', color: groenDark, flexShrink: 0 }}>
+                    <ModuleIcoon size={40} stroke={1.6} />
+                  </div>
+                )}
+                <div style={{ flex: 1, minWidth: 0, paddingTop: '0.25rem' }}>
+                  <h2 style={{ margin: '0 0 0.25rem', color: groenDark, fontSize: isMobiel ? '1.2rem' : '1.4rem', fontWeight: '700', lineHeight: '1.2' }}>{module.titel}</h2>
+                  <p style={{ margin: '0 0 0.25rem', color: '#555', fontSize: '0.92rem', fontStyle: 'italic', lineHeight: '1.4' }}>{module.subtitel}</p>
+                  <p style={{ margin: 0, color: '#666', fontSize: '0.82rem', lineHeight: '1.5' }}>{module.doelgroep}</p>
+                </div>
+              </div>
+
               <div style={{ background: '#f0fafa', borderRadius: '12px', padding: '1.5rem', marginBottom: '1.5rem', borderLeft: `4px solid ${groen}` }}>
                 {module.intro.split('\n\n').map((alinea, i) => (
                   <p key={i} style={{ margin: i < module.intro.split('\n\n').length - 1 ? '0 0 1rem' : 0, lineHeight: '1.8', color: '#333', fontSize: isMobiel ? '0.92rem' : '1rem' }}>
