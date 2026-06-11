@@ -7,9 +7,17 @@ import Sidebar from '../components/Sidebar'
 import { useNavigate } from 'react-router-dom'
 import { modulesData } from '../modulesData'
 import { doelgroepSymbolen, rolNaarLetter } from './TipsEnTools'
+import { doelgroepIconen } from '../components/doelgroepIconen'
 
 const groen = '#00A99D'
 const groenDark = '#1A3080'
+
+const profielOmschrijving = {
+  Ontdekker:       { icoon: '🌱', tekst: 'Je staat aan het begin van je toegankelijkheidsreis. Nieuwsgierigheid is de beste start.' },
+  Kijker:          { icoon: '👀', tekst: 'Je ziet al dat toegankelijkheid belangrijk is — en ontdekt steeds meer details.' },
+  Drempelverlager: { icoon: '🚪', tekst: 'Je houdt actief rekening met toegankelijkheid in je werk en maakt al verschil.' },
+  Voorloper:       { icoon: '⭐', tekst: 'Toegankelijkheid zit al stevig in jouw denken en doen. Nu kun je anderen inspireren.' },
+}
 
 function MijnProfiel() {
   const navigate = useNavigate()
@@ -67,15 +75,9 @@ function MijnProfiel() {
 
   const mijnLetter = profiel ? rolNaarLetter[profiel.rol] || 'C' : null
   const mijnDoelgroep = mijnLetter ? doelgroepSymbolen[mijnLetter] : null
-
-  const profielKleuren = {
-    Ontdekker:       { bg: '#E0F5F4', tekst: groenDark, icoon: '🌱' },
-    Kijker:          { bg: '#E8EFFE', tekst: groenDark, icoon: '👀' },
-    Drempelverlager: { bg: '#EFEDFC', tekst: groenDark, icoon: '🚪' },
-    Voorloper:       { bg: '#FDF0DC', tekst: '#7A4A05', icoon: '⭐' },
-  }
+  const MijnIcoon = mijnLetter ? doelgroepIconen[mijnLetter] : null
   const profielType = profiel?.profielType
-  const pk = profielKleuren[profielType]
+  const po = profielOmschrijving[profielType]
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', background: '#f4f2ee' }}>
@@ -85,18 +87,38 @@ function MijnProfiel() {
 
         {/* Titel met doelgroep icoon */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.4rem' }}>
-          {mijnDoelgroep && <span style={{ fontSize: '2rem' }}>{mijnDoelgroep.icoon}</span>}
+          {MijnIcoon && (
+            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#E0F5F4', display: 'flex', alignItems: 'center', justifyContent: 'center', color: groenDark }}>
+              <MijnIcoon size={24} stroke={1.6} />
+            </div>
+          )}
           <h1 style={{ color: '#1a1a1a', margin: 0, fontSize: isMobiel ? '1.4rem' : '1.75rem' }}>Mijn profiel</h1>
         </div>
         <p style={{ color: '#666', marginBottom: '2rem', fontSize: '0.95rem' }}>Bekijk je reflecties en pas je gegevens aan</p>
 
-        {/* In-Check profiel */}
-        {profielType && pk && (
-          <div style={{ background: pk.bg, border: `1px solid ${pk.tekst}20`, borderRadius: '12px', padding: '1.25rem 1.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <span style={{ fontSize: '1.5rem' }}>{pk.icoon}</span>
-            <div>
-              <div style={{ fontSize: '0.72rem', fontWeight: '700', letterSpacing: '0.08em', color: pk.tekst, textTransform: 'uppercase', marginBottom: '2px' }}>In-Check profiel</div>
-              <div style={{ fontWeight: '600', color: pk.tekst }}>{profielType}</div>
+        {/* InCheck score */}
+        {profielType && po && (
+          <div style={{ background: 'white', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', marginBottom: '1.5rem', borderLeft: `4px solid ${groen}` }}>
+            <p style={{ color: groen, fontWeight: '700', fontSize: '0.75rem', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 0.5rem' }}>InCheck score</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+              <span style={{ fontSize: '2rem' }}>{po.icoon}</span>
+              <h2 style={{ margin: 0, color: groenDark, fontSize: '1.4rem', fontWeight: '700' }}>Jij bent een echte {profielType}</h2>
+            </div>
+            <p style={{ color: '#444', lineHeight: '1.7', margin: 0, fontSize: '0.95rem' }}>{po.tekst}</p>
+
+            <div style={{ marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px solid #eee' }}>
+              <div style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '0.07em', color: '#595959', textTransform: 'uppercase', marginBottom: '0.6rem' }}>Alle vier de profielen</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                {Object.entries(profielOmschrijving).map(([type, p]) => (
+                  <div key={type} style={{ display: 'flex', gap: '0.6rem', alignItems: 'flex-start', padding: '0.5rem', borderRadius: '6px', background: profielType === type ? '#E0F5F4' : 'transparent' }}>
+                    <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>{p.icoon}</span>
+                    <div style={{ flex: 1 }}>
+                      <strong style={{ color: profielType === type ? groenDark : '#333', fontSize: '0.85rem' }}>{type}:</strong>{' '}
+                      <span style={{ color: '#555', fontSize: '0.85rem' }}>{p.tekst}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -105,17 +127,16 @@ function MijnProfiel() {
         <div style={{ background: 'white', borderRadius: '12px', padding: '1.25rem', marginBottom: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
           <div style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '0.07em', color: '#595959', textTransform: 'uppercase', marginBottom: '0.75rem' }}>De vier doelgroepen</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-            {Object.entries(doelgroepSymbolen).map(([letter, d]) => (
-              <div key={letter} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '5px 12px', borderRadius: '20px', background: '#E0F5F4', border: mijnLetter === letter ? `2px solid ${groenDark}` : '1.5px solid transparent' }}>
-                <span style={{ fontSize: '1rem' }}>{d.icoon}</span>
-                <span style={{ fontSize: '12px', fontWeight: mijnLetter === letter ? '700' : '500', color: groenDark }}>
-                  {letter} — {d.label}
-                </span>
-                {mijnLetter === letter && (
-                  <span style={{ fontSize: '10px', background: groenDark, color: 'white', padding: '1px 6px', borderRadius: '10px', fontWeight: '700' }}>jij</span>
-                )}
-              </div>
-            ))}
+            {Object.entries(doelgroepSymbolen).map(([letter, d]) => {
+              const Icoon = doelgroepIconen[letter]
+              return (
+                <div key={letter} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '5px 12px', borderRadius: '20px', background: '#E0F5F4', border: mijnLetter === letter ? `2px solid ${groenDark}` : '1.5px solid transparent' }}>
+                  <Icoon size={16} stroke={1.7} color={groenDark} />
+                  <span style={{ fontSize: '12px', fontWeight: mijnLetter === letter ? '700' : '500', color: groenDark }}>{letter} — {d.label}</span>
+                  {mijnLetter === letter && <span style={{ fontSize: '10px', background: groenDark, color: 'white', padding: '1px 6px', borderRadius: '10px', fontWeight: '700' }}>jij</span>}
+                </div>
+              )
+            })}
           </div>
         </div>
 

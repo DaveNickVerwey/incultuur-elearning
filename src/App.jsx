@@ -5,17 +5,21 @@ import { doc, getDoc } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 import Login from './pages/Login'
 import Profiel from './pages/Profiel'
+import WelkomIntro from './pages/WelkomIntro'
 import Welkom from './pages/Welkom'
+import ModulesUitleg from './pages/ModulesUitleg'
 import Dashboard from './pages/Dashboard'
 import Contact from './pages/Contact'
 import MijnProfiel from './pages/MijnProfiel'
 import Module from './pages/Module'
 import Bewijs from './pages/Bewijs'
 import TipsEnTools from './pages/TipsEnTools'
+import Faq from './pages/Faq'
+import Privacy from './pages/Privacy'
 
 function ProtectedRoute({ children }) {
   const [user, loading] = useAuthState(auth)
-  const [status, setStatus] = useState(null) // null = laden, 'ok', 'geen-profiel', 'geen-welkom'
+  const [status, setStatus] = useState(null)
 
   useEffect(() => {
     if (!user) return
@@ -36,7 +40,7 @@ function ProtectedRoute({ children }) {
   if (loading || status === null) return <div style={{ padding: '2rem', fontFamily: 'system-ui' }}>Laden...</div>
   if (!user) return <Navigate to="/login" />
   if (status === 'geen-profiel') return <Navigate to="/profiel" />
-  if (status === 'geen-welkom') return <Navigate to="/welkom" />
+  if (status === 'geen-welkom') return <Navigate to="/welkom-intro" />
   return children
 }
 
@@ -45,25 +49,17 @@ function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/profiel" element={<Profiel />} />
+      <Route path="/welkom-intro" element={<WelkomIntro />} />
       <Route path="/welkom" element={<Welkom />} />
-      <Route path="/dashboard" element={
-        <ProtectedRoute><Dashboard /></ProtectedRoute>
-      } />
-      <Route path="/module/:nr" element={
-        <ProtectedRoute><Module /></ProtectedRoute>
-      } />
-      <Route path="/mijnprofiel" element={
-        <ProtectedRoute><MijnProfiel /></ProtectedRoute>
-      } />
-      <Route path="/bewijs" element={
-        <ProtectedRoute><Bewijs /></ProtectedRoute>
-      } />
-      <Route path="/contact" element={
-        <ProtectedRoute><Contact /></ProtectedRoute>
-      } />
-      <Route path="/tipstools" element={
-        <ProtectedRoute><TipsEnTools /></ProtectedRoute>
-      } />
+      <Route path="/modules-uitleg" element={<ModulesUitleg />} />
+      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/module/:nr" element={<ProtectedRoute><Module /></ProtectedRoute>} />
+      <Route path="/mijnprofiel" element={<ProtectedRoute><MijnProfiel /></ProtectedRoute>} />
+      <Route path="/bewijs" element={<ProtectedRoute><Bewijs /></ProtectedRoute>} />
+      <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
+      <Route path="/tipstools" element={<ProtectedRoute><TipsEnTools /></ProtectedRoute>} />
+      <Route path="/faq" element={<ProtectedRoute><Faq /></ProtectedRoute>} />
+      <Route path="/privacy" element={<ProtectedRoute><Privacy /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   )

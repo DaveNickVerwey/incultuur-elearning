@@ -49,7 +49,7 @@ function Profiel() {
       modulesUnlocked: [eersteModule],
       allUnlocked: false,
     }, { merge: true })
-    navigate('/welkom')
+    navigate('/welkom-intro')
   }
 
   const stap1Klaar = form.naam && form.achternaam && form.organisatie && form.functie
