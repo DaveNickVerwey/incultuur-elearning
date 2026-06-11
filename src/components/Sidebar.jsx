@@ -5,6 +5,7 @@ import { doc, getDoc } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 import { signOut } from 'firebase/auth'
 import { IconCultuur, IconBereik, IconSamenwerking, IconMogelijkheden } from './doelgroepIconen'
+import logo from '../assets/InCultuur-community.webp'
 
 const groen = '#00A99D'
 const groenDark = '#1A3080'
@@ -80,10 +81,13 @@ function Sidebar({ actief, voortgang = {}, profiel: profielProp }) {
         <button onClick={() => setMobielOpen(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'transparent', border: 'none', color: '#444', fontSize: '1.25rem', cursor: 'pointer' }}>✕</button>
       )}
 
-      {/* Logo */}
-      <div style={{ padding: '1.25rem', borderBottom: '1px solid rgba(0,0,0,0.09)' }}>
-        <div style={{ fontWeight: '700', fontSize: '14px', color: groenDark }}>InCultuur Boost</div>
-        {profiel && <div style={{ fontSize: '11px', color: '#555', marginTop: '2px' }}>{profiel.naam} {profiel.achternaam}</div>}
+      {/* Logo + tekst */}
+      <div style={{ padding: '1.1rem 1.25rem', borderBottom: '1px solid rgba(0,0,0,0.09)', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+        <img src={logo} alt="InCultuur" style={{ height: '36px', width: 'auto', objectFit: 'contain', flexShrink: 0 }} />
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontWeight: '700', fontSize: '13px', color: groenDark, lineHeight: '1.2' }}>InCultuur Boost</div>
+          {profiel && <div style={{ fontSize: '10px', color: '#555', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{profiel.naam} {profiel.achternaam}</div>}
+        </div>
       </div>
 
       <nav style={{ flex: 1, padding: '0.75rem' }}>
@@ -91,7 +95,6 @@ function Sidebar({ actief, voortgang = {}, profiel: profielProp }) {
 
         {navItem('Dashboard', '/dashboard', 'dashboard')}
 
-        {/* Modules met iconen */}
         <div
           onClick={() => setModulesOpen(!modulesOpen)}
           style={{ padding: '8px 10px', borderRadius: '7px', marginBottom: '2px', cursor: 'pointer', fontSize: '14px', color: '#333', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
@@ -138,7 +141,6 @@ function Sidebar({ actief, voortgang = {}, profiel: profielProp }) {
         {navItem('Contact', '/contact', 'contact')}
       </nav>
 
-      {/* Voortgang */}
       <div style={{ padding: '1rem 1.25rem', borderTop: '1px solid rgba(0,0,0,0.09)' }}>
         <div style={{ fontSize: '12px', color: '#444', marginBottom: '5px', display: 'flex', justifyContent: 'space-between' }}>
           <span>Voortgang</span>

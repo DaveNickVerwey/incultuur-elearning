@@ -4,7 +4,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth, db } from '../firebase'
 import { doc, getDoc } from 'firebase/firestore'
 import { useNavigate } from 'react-router-dom'
-import logo from '../assets/logo.jpeg'
+import logo from '../assets/InCultuur-community.webp'
 
 const groen = '#00A99D'
 const groenDark = '#1A3080'
@@ -48,7 +48,7 @@ function Login() {
         <div style={{ position: 'fixed', inset: 0, backgroundImage: `url(${theaterFoto})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.2 }} />
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
           <div style={{ padding: '3rem 1.5rem 2rem' }}>
-            <img src={logo} alt="InCultuur logo" style={{ width: '80px', marginBottom: '1.5rem' }} />
+            <img src={logo} alt="InCultuur logo" style={{ height: '70px', width: 'auto', marginBottom: '1.5rem', objectFit: 'contain' }} />
             <p style={{ color: 'white', fontSize: '1.4rem', fontStyle: 'italic', fontWeight: '300', lineHeight: '1.4', marginBottom: '0.75rem' }}>
               "Cultuur is voor iedereen.<br />Leer hoe je dat waarmaakt."
             </p>
@@ -112,7 +112,7 @@ function Login() {
         </div>
       </div>
       <div style={{ width: '420px', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '3rem', background: 'white' }}>
-        <img src={logo} alt="InCultuur logo" style={{ width: '120px', marginBottom: '2rem' }} />
+        <img src={logo} alt="InCultuur logo" style={{ height: '70px', width: 'auto', marginBottom: '2rem', objectFit: 'contain' }} />
         <h1 style={{ color: groenDark, fontSize: '1.75rem', margin: '0 0 0.5rem' }}>Inloggen</h1>
         <p style={{ color: '#555', fontSize: '0.9rem', marginBottom: '2rem', lineHeight: '1.6' }}>
           Je ontving je inloggegevens via e-mail. Vul ze hieronder in om te beginnen.

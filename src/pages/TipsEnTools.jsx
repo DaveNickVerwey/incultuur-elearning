@@ -3,6 +3,7 @@ import { auth, db } from '../firebase'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { doc, getDoc } from 'firebase/firestore'
 import Sidebar from '../components/Sidebar'
+import { doelgroepIconen } from '../components/doelgroepIconen'
 
 const groen = '#00A99D'
 const groenDark = '#1A3080'
@@ -126,13 +127,16 @@ function TipsEnTools() {
               De vier doelgroepen
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-              {Object.entries(doelgroepSymbolen).map(([letter, d]) => (
-                <div key={letter} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '5px 10px', borderRadius: '20px', background: '#E0F5F4', border: mijnLetter === letter ? `2px solid ${groenDark}` : '1.5px solid transparent' }}>
-                  <span style={{ fontSize: '1rem' }}>{d.icoon}</span>
-                  <span style={{ fontSize: '11px', fontWeight: '600', color: groenDark, lineHeight: '1.3' }}>{letter} — {d.label}</span>
-                  {mijnLetter === letter && <span style={{ fontSize: '9px', background: groenDark, color: 'white', padding: '1px 5px', borderRadius: '10px', fontWeight: '700', flexShrink: 0 }}>jij</span>}
-                </div>
-              ))}
+              {Object.entries(doelgroepSymbolen).map(([letter, d]) => {
+                const Icoon = doelgroepIconen[letter]
+                return (
+                  <div key={letter} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '5px 10px', borderRadius: '20px', background: '#E0F5F4', border: mijnLetter === letter ? `2px solid ${groenDark}` : '1.5px solid transparent' }}>
+                    <Icoon size={16} stroke={1.7} color={groenDark} />
+                    <span style={{ fontSize: '11px', fontWeight: '600', color: groenDark, lineHeight: '1.3' }}>{letter} — {d.label}</span>
+                    {mijnLetter === letter && <span style={{ fontSize: '9px', background: groenDark, color: 'white', padding: '1px 5px', borderRadius: '10px', fontWeight: '700', flexShrink: 0 }}>jij</span>}
+                  </div>
+                )
+              })}
             </div>
           </div>
 
@@ -146,13 +150,14 @@ function TipsEnTools() {
             </button>
             {Object.entries(doelgroepSymbolen).map(([letter, d]) => {
               const aantal = tips.filter((t) => t.doelgroepen.includes(letter)).length
+              const Icoon = doelgroepIconen[letter]
               return (
                 <button
                   key={letter}
                   onClick={() => setFilter(letter)}
-                  style={{ padding: '7px 14px', borderRadius: '20px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: '600', fontFamily: 'system-ui', background: filter === letter ? groenDark : 'white', color: filter === letter ? 'white' : '#444', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', gap: '4px' }}
+                  style={{ padding: '7px 14px', borderRadius: '20px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: '600', fontFamily: 'system-ui', background: filter === letter ? groenDark : 'white', color: filter === letter ? 'white' : '#444', boxShadow: '0 1px 3px rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', gap: '5px' }}
                 >
-                  <span>{d.icoon}</span>
+                  <Icoon size={14} stroke={1.7} color={filter === letter ? 'white' : groenDark} />
                   <span>{letter} ({aantal})</span>
                   {mijnLetter === letter && <span style={{ fontSize: '9px', opacity: 0.8 }}>←</span>}
                 </button>
@@ -192,26 +197,20 @@ function TipsEnTools() {
                       </div>
                     </div>
 
-                    {/* Doelgroep symbolen — op mobiel 2x2 grid */}
+                    {/* Doelgroep iconen */}
                     {isMobiel ? (
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3px', flexShrink: 0 }}>
                         {tip.doelgroepen.map((letter) => {
                           const d = doelgroepSymbolen[letter]
+                          const Icoon = doelgroepIconen[letter]
                           const isJij = letter === mijnLetter
                           return (
                             <div
                               key={letter}
                               title={d.label}
-                              style={{
-                                width: '24px', height: '24px',
-                                borderRadius: '50%',
-                                background: isJij ? groenDark : '#E0F5F4',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontSize: '0.7rem',
-                                border: isJij ? `2px solid ${groenDark}` : '1.5px solid rgba(0,0,0,0.08)',
-                              }}
+                              style={{ width: '24px', height: '24px', borderRadius: '50%', background: isJij ? groenDark : '#E0F5F4', display: 'flex', alignItems: 'center', justifyContent: 'center', border: isJij ? `2px solid ${groenDark}` : '1.5px solid rgba(0,0,0,0.08)' }}
                             >
-                              {d.icoon}
+                              <Icoon size={13} stroke={1.7} color={isJij ? 'white' : groenDark} />
                             </div>
                           )
                         })}
@@ -220,21 +219,15 @@ function TipsEnTools() {
                       <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
                         {tip.doelgroepen.map((letter) => {
                           const d = doelgroepSymbolen[letter]
+                          const Icoon = doelgroepIconen[letter]
                           const isJij = letter === mijnLetter
                           return (
                             <div
                               key={letter}
                               title={d.label}
-                              style={{
-                                width: '28px', height: '28px',
-                                borderRadius: '50%',
-                                background: isJij ? groenDark : '#E0F5F4',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontSize: '0.85rem',
-                                border: isJij ? `2px solid ${groenDark}` : '1.5px solid rgba(0,0,0,0.08)',
-                              }}
+                              style={{ width: '28px', height: '28px', borderRadius: '50%', background: isJij ? groenDark : '#E0F5F4', display: 'flex', alignItems: 'center', justifyContent: 'center', border: isJij ? `2px solid ${groenDark}` : '1.5px solid rgba(0,0,0,0.08)' }}
                             >
-                              {d.icoon}
+                              <Icoon size={15} stroke={1.7} color={isJij ? 'white' : groenDark} />
                             </div>
                           )
                         })}
