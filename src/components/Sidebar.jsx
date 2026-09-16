@@ -4,17 +4,16 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { doc, getDoc } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 import { signOut } from 'firebase/auth'
-import { IconCultuur, IconBereik, IconSamenwerking, IconMogelijkheden } from './doelgroepIconen'
 import logo from '../assets/InCultuur-community.webp'
 
 const groen = '#00A99D'
 const groenDark = '#1A3080'
 
 const moduleData = [
-  { titel: 'Makers van cultuur', Icoon: IconCultuur },
-  { titel: 'Makers van bereik', Icoon: IconBereik },
-  { titel: 'Makers van samenwerking', Icoon: IconSamenwerking },
-  { titel: 'Makers van mogelijkheden', Icoon: IconMogelijkheden },
+  { titel: 'Makers van cultuur' },
+  { titel: 'Makers van bereik' },
+  { titel: 'Makers van samenwerking' },
+  { titel: 'Makers van mogelijkheden' },
 ]
 
 function Sidebar({ actief, voortgang = {}, profiel: profielProp }) {
@@ -51,7 +50,7 @@ function Sidebar({ actief, voortgang = {}, profiel: profielProp }) {
   const percentage = Math.round((afgerond / 4) * 100)
 
   const eersteModule = profiel?.eersteModule || 1
-  const allUnlocked = profiel?.allUnlocked || false
+  const allUnlocked = true // TIJDELIJK: alle modules altijd beschikbaar
 
   const moduleStatus = (nr) => {
     if (voortgang[nr]) return 'afgerond'
@@ -81,13 +80,9 @@ function Sidebar({ actief, voortgang = {}, profiel: profielProp }) {
         <button onClick={() => setMobielOpen(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'transparent', border: 'none', color: '#444', fontSize: '1.25rem', cursor: 'pointer' }}>✕</button>
       )}
 
-      {/* Logo + tekst */}
-      <div style={{ padding: '1.1rem 1.25rem', borderBottom: '1px solid rgba(0,0,0,0.09)', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-        <img src={logo} alt="InCultuur" style={{ height: '36px', width: 'auto', objectFit: 'contain', flexShrink: 0 }} />
-        <div style={{ minWidth: 0 }}>
-          <div style={{ fontWeight: '700', fontSize: '13px', color: groenDark, lineHeight: '1.2' }}>InCultuur Boost</div>
-          {profiel && <div style={{ fontSize: '10px', color: '#555', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{profiel.naam} {profiel.achternaam}</div>}
-        </div>
+      {/* Logo */}
+      <div style={{ padding: '1.25rem', borderBottom: '1px solid rgba(0,0,0,0.09)', display: 'flex', justifyContent: 'center' }}>
+        <img src={logo} alt="InCultuur" style={{ height: '50px', width: 'auto', objectFit: 'contain' }} />
       </div>
 
       <nav style={{ flex: 1, padding: '0.75rem' }}>
@@ -118,7 +113,6 @@ function Sidebar({ actief, voortgang = {}, profiel: profielProp }) {
                   onClick={() => status !== 'vergrendeld' && handleNavigeer(`/module/${nr}`)}
                   style={{ padding: '6px 8px', fontSize: '12px', color: status === 'vergrendeld' ? '#767676' : isActief ? groenDark : '#444', display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '2px', cursor: status === 'vergrendeld' ? 'default' : 'pointer', borderRadius: '6px', background: isActief ? '#E0F5F4' : 'transparent', fontWeight: isActief ? '600' : '400' }}
                 >
-                  <m.Icoon size={16} stroke={1.6} color={status === 'vergrendeld' ? '#aaa' : isActief ? groenDark : groen} />
                   <span style={{ lineHeight: '1.3', flex: 1, minWidth: 0 }}>{m.titel}</span>
                   {status === 'afgerond' && <span style={{ fontSize: '10px', color: groen, flexShrink: 0 }}>✓</span>}
                   {status === 'vergrendeld' && <span style={{ fontSize: '10px', flexShrink: 0 }}>🔒</span>}
@@ -129,6 +123,7 @@ function Sidebar({ actief, voortgang = {}, profiel: profielProp }) {
         )}
 
         {navItem('Tips & Tools', '/tipstools', 'tipstools')}
+        {navItem('Verdieping', '/verdieping', 'verdieping')}
 
         <div style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '0.07em', color: '#595959', padding: '10px 10px 4px', textTransform: 'uppercase' }}>Account</div>
 

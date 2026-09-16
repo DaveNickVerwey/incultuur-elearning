@@ -4,16 +4,15 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { doc, setDoc } from 'firebase/firestore'
 import { useNavigate } from 'react-router-dom'
 import theaterFoto from '../assets/theater.jpg'
-import { IconCultuur, IconBereik, IconSamenwerking, IconMogelijkheden } from '../components/doelgroepIconen'
 
 const groen = '#00A99D'
 const groenDark = '#1A3080'
 
 const modules = [
-  { nr: 1, titel: 'Makers van cultuur', Icoon: IconCultuur, omschrijving: 'Voor kunstenaars, programmeurs, curatoren, educatoren en iedereen die cultuur maakt.' },
-  { nr: 2, titel: 'Makers van bereik', Icoon: IconBereik, omschrijving: 'Voor communicatie, social media, ticketing en publieksservice: iedereen die bepaalt hoe welkom bezoekers zich voelen.' },
-  { nr: 3, titel: 'Makers van samenwerking', Icoon: IconSamenwerking, omschrijving: 'Voor HR, leidinggevenden en coördinatoren die werken aan inclusieve teams en toegankelijk werkgeverschap.' },
-  { nr: 4, titel: 'Makers van mogelijkheden', Icoon: IconMogelijkheden, omschrijving: 'Voor productie, techniek, facilitair en organisatie: de mensen die toegankelijkheid mogelijk maken in de praktijk.' },
+  { nr: 1, titel: 'Makers van cultuur', omschrijving: 'Voor kunstenaars, programmeurs, curatoren, educatoren en iedereen die cultuur maakt.' },
+  { nr: 2, titel: 'Makers van bereik', omschrijving: 'Voor communicatie, social media, ticketing en publieksservice: iedereen die bepaalt hoe welkom bezoekers zich voelen.' },
+  { nr: 3, titel: 'Makers van samenwerking', omschrijving: 'Voor HR, leidinggevenden en coördinatoren die werken aan inclusieve teams en toegankelijk werkgeverschap.' },
+  { nr: 4, titel: 'Makers van mogelijkheden', omschrijving: 'Voor productie, techniek, facilitair en organisatie: de mensen die toegankelijkheid mogelijk maken in de praktijk.' },
 ]
 
 function ModulesUitleg() {
@@ -58,17 +57,12 @@ function ModulesUitleg() {
         {/* Module kaarten */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
           {modules.map((m) => (
-            <div key={m.nr} style={{ background: '#E0F5F4', borderRadius: '12px', padding: '1.1rem 1.25rem', display: 'flex', alignItems: 'flex-start', gap: '0.875rem' }}>
-              <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: groenDark }}>
-                <m.Icoon size={26} stroke={1.6} />
+            <div key={m.nr} style={{ background: '#E0F5F4', borderRadius: '12px', padding: '1.1rem 1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '3px', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: '700', color: groen }}>{m.nr}.</span>
+                <h3 style={{ margin: 0, color: groenDark, fontSize: '1rem', fontWeight: '700' }}>{m.titel}</h3>
               </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '3px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '0.82rem', fontWeight: '700', color: groen }}>{m.nr}.</span>
-                  <h3 style={{ margin: 0, color: groenDark, fontSize: '1rem', fontWeight: '700' }}>{m.titel}</h3>
-                </div>
-                <p style={{ margin: 0, color: '#333', fontSize: '0.88rem', lineHeight: '1.55' }}>{m.omschrijving}</p>
-              </div>
+              <p style={{ margin: 0, color: '#333', fontSize: '0.88rem', lineHeight: '1.55' }}>{m.omschrijving}</p>
             </div>
           ))}
         </div>

@@ -62,7 +62,7 @@ function Dashboard() {
   if (!profiel) return <div style={{ padding: '2rem', fontFamily: 'system-ui' }}>Laden...</div>
 
   const eersteModule = profiel.eersteModule || 1
-  const allUnlocked = profiel.allUnlocked || false
+  const allUnlocked = true
   const afgerond = Object.values(voortgang).filter(Boolean).length
   const percentage = Math.round((afgerond / 4) * 100)
 
@@ -72,6 +72,7 @@ function Dashboard() {
 
   const profielType = profiel.profielType
   const profielKleur = profielKleuren[profielType]
+  const jouwModuleTitel = modulesData.find((m) => m.nr === eersteModule)?.titel
 
   const handleUnlockAlles = async () => {
     const ref = doc(db, 'gebruikers', user.uid)
@@ -87,12 +88,12 @@ function Dashboard() {
 
       <main style={{ marginLeft: isMobiel ? 0 : '220px', padding: isMobiel ? '4rem 1.25rem 2rem' : '2.5rem', flex: 1 }}>
 
-        <div style={{ marginBottom: '2rem' }}>
+        <div style={{ marginBottom: '1.5rem' }}>
           <h1 style={{ color: '#1a1a1a', margin: '0 0 0.4rem', fontSize: isMobiel ? '1.4rem' : '1.75rem' }}>
             Hallo, {profiel.naam}!
           </h1>
           <p style={{ color: '#444', margin: 0, fontSize: '0.95rem', lineHeight: '1.6' }}>
-            {afgerond === 0 ? 'Ga verder waar je gebleven bent' : afgerond === 4 ? 'Je hebt alle modules afgerond. Indrukwekkend!' : `Je hebt ${afgerond} van de 4 modules afgerond. Goed bezig!`}
+            {afgerond === 0 ? `Begin met "${jouwModuleTitel}" — de module die het beste past bij jouw discipline.` : afgerond === 4 ? 'Je hebt alle modules afgerond. Indrukwekkend!' : `Je hebt ${afgerond} van de 4 modules afgerond. Goed bezig!`}
           </p>
         </div>
 
@@ -106,7 +107,7 @@ function Dashboard() {
           </div>
         )}
 
-        <div style={{ background: 'white', borderRadius: '12px', padding: '1rem 1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', marginBottom: '1.5rem' }}>
+        <div style={{ background: 'white', borderRadius: '12px', padding: '1rem 1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', marginBottom: '2rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' }}>
             <span style={{ fontSize: '0.88rem', color: '#333', fontWeight: '500' }}>Voortgang</span>
             <span style={{ fontWeight: '700', color: groenDark, fontSize: '0.95rem' }}>{percentage}%</span>
@@ -116,21 +117,6 @@ function Dashboard() {
           </div>
           <div style={{ marginTop: '6px', fontSize: '0.82rem', color: '#555' }}>{afgerond} van 4 modules voltooid</div>
         </div>
-
-        {afgerond >= 1 && !allUnlocked && !toonFeedback && (
-          <div style={{ background: groenDark, borderRadius: '12px', padding: '1.25rem 1.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
-            <span style={{ fontSize: '1.5rem', flexShrink: 0 }}>🎉</span>
-            <div>
-              <p style={{ color: 'white', fontWeight: '600', margin: '0 0 0.4rem', fontSize: '0.95rem' }}>Je hebt jouw eerste module afgerond!</p>
-              <p style={{ color: 'rgba(255,255,255,0.9)', margin: '0 0 0.75rem', fontSize: '0.88rem', lineHeight: '1.6' }}>
-                Toegankelijkheid is breder dan jouw rol alleen. Ontdek nu ook hoe je collega's het aanpakken — en hoe alle puzzelstukjes samenkomen.
-              </p>
-              <button onClick={() => setToonFeedback(true)} style={{ padding: '0.6rem 1.25rem', background: 'white', color: groenDark, border: 'none', borderRadius: '8px', fontSize: '0.88rem', fontWeight: '700', cursor: 'pointer' }}>
-                Ontgrendel alle modules →
-              </button>
-            </div>
-          </div>
-        )}
 
         {toonFeedback && (
           <div style={{ background: 'white', borderRadius: '12px', padding: '1.75rem', marginBottom: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', borderLeft: `4px solid ${groen}` }}>
@@ -144,7 +130,7 @@ function Dashboard() {
             ))}
             <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
               <button onClick={() => setToonFeedback(false)} style={{ padding: '0.8rem 1.5rem', background: 'white', color: '#333', border: '1.5px solid #ddd', borderRadius: '8px', fontSize: '0.9rem', fontWeight: '600', cursor: 'pointer' }}>← Terug</button>
-              <button onClick={handleUnlockAlles} style={{ padding: '0.8rem 1.5rem', background: groen, color: 'white', border: 'none', borderRadius: '8px', fontSize: '0.9rem', fontWeight: '700', cursor: 'pointer' }}>Verstuur & ontgrendel alle modules →</button>
+              <button onClick={handleUnlockAlles} style={{ padding: '0.8rem 1.5rem', background: groen, color: 'white', border: 'none', borderRadius: '8px', fontSize: '0.9rem', fontWeight: '700', cursor: 'pointer' }}>Verstuur feedback →</button>
             </div>
           </div>
         )}
@@ -152,7 +138,7 @@ function Dashboard() {
         {feedbackVerstuurd && (
           <div style={{ background: '#E0F5F4', borderRadius: '12px', padding: '1rem 1.25rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <span style={{ fontSize: '1.25rem' }}>✅</span>
-            <p style={{ margin: 0, color: groenDark, fontWeight: '600', fontSize: '0.9rem' }}>Bedankt voor je feedback! Alle modules zijn nu beschikbaar.</p>
+            <p style={{ margin: 0, color: groenDark, fontWeight: '600', fontSize: '0.9rem' }}>Bedankt voor je feedback!</p>
           </div>
         )}
 
@@ -170,25 +156,50 @@ function Dashboard() {
               <div
                 key={module.nr}
                 onClick={() => unlocked && navigate(`/module/${module.nr}`)}
-                style={{ borderRadius: '14px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', cursor: unlocked ? 'pointer' : 'default', background: 'white', transition: 'transform 0.15s, box-shadow 0.15s' }}
-                onMouseEnter={(e) => { if (unlocked) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.12)' }}}
-                onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)' }}
+                style={{
+                  borderRadius: '14px',
+                  overflow: 'hidden',
+                  boxShadow: isFirst ? `0 4px 20px rgba(0,169,157,0.35)` : '0 2px 8px rgba(0,0,0,0.08)',
+                  cursor: unlocked ? 'pointer' : 'default',
+                  background: 'white',
+                  transition: 'transform 0.15s, box-shadow 0.15s',
+                  border: isFirst ? `3px solid ${groen}` : '3px solid transparent',
+                  position: 'relative',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: '100%',
+                }}
+                onMouseEnter={(e) => { if (unlocked) { e.currentTarget.style.transform = 'translateY(-2px)' } }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'none' }}
               >
-                {/* Foto met overlay */}
-                <div style={{ height: '160px', position: 'relative', overflow: 'hidden' }}>
+                {/* "Jouw module" lint bovenop de kaart */}
+                {isFirst && (
+                  <div style={{
+                    background: groen,
+                    color: 'white',
+                    padding: '8px 12px',
+                    fontSize: '0.72rem',
+                    fontWeight: '700',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    textAlign: 'center',
+                    lineHeight: '1',
+                  }}>
+                    ⭐ Aanbevolen voor jou · Start hier
+                  </div>
+                )}
+
+                {/* Foto */}
+                <div style={{ height: isFirst ? '160px' : '188px', position: 'relative', overflow: 'hidden', display: 'block', fontSize: 0, flexShrink: 0 }}>
                   <img
                     src={fotoMap[module.nr]}
                     alt={module.titel}
                     style={{ width: '100%', height: '100%', objectFit: 'cover', filter: !unlocked ? 'grayscale(80%)' : 'none' }}
                   />
-                  <div style={{
-                    position: 'absolute', inset: 0,
-                    background: afgerondStatus ? 'rgba(26,48,128,0.6)' : !unlocked ? 'rgba(0,0,0,0.5)' : 'rgba(26,48,128,0.25)',
-                  }} />
+                  <div style={{ position: 'absolute', inset: 0, background: afgerondStatus ? 'rgba(26,48,128,0.6)' : !unlocked ? 'rgba(0,0,0,0.5)' : 'rgba(26,48,128,0.25)' }} />
 
                   <div style={{ position: 'absolute', top: '0.75rem', right: '0.75rem' }}>
                     {afgerondStatus && <span style={{ background: groen, color: 'white', padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.72rem', fontWeight: '700' }}>✓ Voltooid</span>}
-                    {isFirst && <span style={{ background: 'white', color: groenDark, padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.72rem', fontWeight: '700' }}>Jouw module</span>}
                     {isAndere && <span style={{ background: 'rgba(255,255,255,0.9)', color: '#333', padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.72rem', fontWeight: '600' }}>Ook interessant</span>}
                     {!unlocked && <span style={{ background: 'rgba(0,0,0,0.55)', color: 'white', padding: '0.3rem 0.75rem', borderRadius: '20px', fontSize: '0.72rem' }}>🔒 Vergrendeld</span>}
                   </div>
@@ -198,21 +209,13 @@ function Dashboard() {
                   </div>
                 </div>
 
-                {/* Body met groot icoon links */}
-                <div style={{ padding: '1.25rem', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                  {/* Groot icoon */}
-                  <div style={{ width: '56px', height: '56px', borderRadius: '12px', background: '#E0F5F4', display: 'flex', alignItems: 'center', justifyContent: 'center', color: groenDark, flexShrink: 0 }}>
-                    <Icoon size={32} stroke={1.6} />
-                  </div>
-
-                  {/* Tekst */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <h2 style={{ margin: '0 0 0.2rem', color: '#1a1a1a', fontSize: '1.05rem', fontWeight: '700', lineHeight: '1.25' }}>{module.titel}</h2>
-                    <p style={{ margin: '0 0 0.4rem', color: '#444', fontSize: '0.85rem', fontStyle: 'italic', lineHeight: '1.4' }}>{module.subtitel}</p>
-                    <p style={{ margin: '0 0 0.6rem', color: '#666', fontSize: '0.78rem', lineHeight: '1.5' }}>{module.doelgroep}</p>
-                    <div style={{ height: '3px', background: '#ddd', borderRadius: '2px', overflow: 'hidden' }}>
-                      <div style={{ height: '100%', background: groen, width: afgerondStatus ? '100%' : '0%', borderRadius: '2px', transition: 'width 0.3s' }} />
-                    </div>
+                {/* Body */}
+                <div style={{ padding: '1.25rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  <h2 style={{ margin: '0 0 0.3rem', color: '#1a1a1a', fontSize: '1.05rem', fontWeight: '700', lineHeight: '1.25' }}>{module.titel}</h2>
+                  <p style={{ margin: '0 0 0.5rem', color: '#444', fontSize: '0.88rem', fontStyle: 'italic', lineHeight: '1.4' }}>{module.subtitel}</p>
+                  <p style={{ margin: '0 0 0.75rem', color: '#666', fontSize: '0.82rem', lineHeight: '1.55' }}>{module.doelgroep}</p>
+                  <div style={{ height: '3px', background: '#ddd', borderRadius: '2px', overflow: 'hidden', marginTop: 'auto' }}>
+                    <div style={{ height: '100%', background: groen, width: afgerondStatus ? '100%' : '0%', borderRadius: '2px', transition: 'width 0.3s' }} />
                   </div>
                 </div>
               </div>

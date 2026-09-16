@@ -33,7 +33,7 @@ function Login() {
       if (!snap.exists() || !snap.data().naam) {
         navigate('/profiel')
       } else if (!snap.data().welkomGezien) {
-        navigate('/welkom-intro')
+        navigate('/basiskennis/1')
       } else {
         navigate('/dashboard')
       }

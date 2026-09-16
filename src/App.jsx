@@ -5,8 +5,8 @@ import { doc, getDoc } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 import Login from './pages/Login'
 import Profiel from './pages/Profiel'
-import WelkomIntro from './pages/WelkomIntro'
-import Welkom from './pages/Welkom'
+import Basiskennis from './pages/Basiskennis'
+import Verdieping from './pages/Verdieping'
 import ModulesUitleg from './pages/ModulesUitleg'
 import Dashboard from './pages/Dashboard'
 import Contact from './pages/Contact'
@@ -40,7 +40,7 @@ function ProtectedRoute({ children }) {
   if (loading || status === null) return <div style={{ padding: '2rem', fontFamily: 'system-ui' }}>Laden...</div>
   if (!user) return <Navigate to="/login" />
   if (status === 'geen-profiel') return <Navigate to="/profiel" />
-  if (status === 'geen-welkom') return <Navigate to="/welkom-intro" />
+  if (status === 'geen-welkom') return <Navigate to="/basiskennis/1" />
   return children
 }
 
@@ -49,8 +49,8 @@ function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/profiel" element={<Profiel />} />
-      <Route path="/welkom-intro" element={<WelkomIntro />} />
-      <Route path="/welkom" element={<Welkom />} />
+      <Route path="/basiskennis/:stap" element={<Basiskennis />} />
+      <Route path="/basiskennis" element={<Navigate to="/basiskennis/1" />} />
       <Route path="/modules-uitleg" element={<ModulesUitleg />} />
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/module/:nr" element={<ProtectedRoute><Module /></ProtectedRoute>} />
@@ -58,6 +58,7 @@ function App() {
       <Route path="/bewijs" element={<ProtectedRoute><Bewijs /></ProtectedRoute>} />
       <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
       <Route path="/tipstools" element={<ProtectedRoute><TipsEnTools /></ProtectedRoute>} />
+      <Route path="/verdieping" element={<ProtectedRoute><Verdieping /></ProtectedRoute>} />
       <Route path="/faq" element={<ProtectedRoute><Faq /></ProtectedRoute>} />
       <Route path="/privacy" element={<ProtectedRoute><Privacy /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/login" />} />
